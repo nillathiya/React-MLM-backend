@@ -1,10 +1,11 @@
 //class object created when constructor is called
 class ApiResponse {
-    constructor(statusCode, data, message = "Success") {
+    constructor(statusCode, data, message = "Success",pagination) {
       this.statusCode = statusCode;
       this.data = data;
       this.message = message;
       this.success = statusCode < 400;
+      this.pagination = pagination; 
     }
   }
   module.exports = { ApiResponse };
