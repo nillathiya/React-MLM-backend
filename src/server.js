@@ -1,5 +1,5 @@
 require('module-alias/register');
-require("dotenv").config();
+require("dotenv").config({path: ".env.development.local"});
 const express = require("express");
 const http = require("http");
 const path = require("path");

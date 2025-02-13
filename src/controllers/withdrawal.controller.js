@@ -65,7 +65,7 @@ exports.createRequest = async (req, res,next) => {
     const transferAmount = 0 - postData.amount;
     const mangeTransaction = await common.mangeWalletAmounts(
       vsuser._id,
-      walletType,
+      walletType,  
       transferAmount
     );
     if (!mangeTransaction.status) {
@@ -90,10 +90,7 @@ exports.createRequest = async (req, res,next) => {
 //   try {
 //     // Check if the user is an admin
 //     if (!req._IS_ADMIN_ACCOUNT) {
-//       return res.status(401).json({
-//         status: "error",
-//         message: "Unauthorized access",
-//       });
+//       throw new ApiError(401,"Unauthorized access");
 //     }
 
 //     // Validate required fields

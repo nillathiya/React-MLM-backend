@@ -7,6 +7,7 @@ const walletSettingsSchema = new Schema(
     slug: String, // Fund_Wallet
     name: String,
     wallet: String,
+    column: { type: String, required: true },
     type: String,
     binary: { type: Number, default: 0 },
     matrix: { type: Number, default: 0 },

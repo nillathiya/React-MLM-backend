@@ -8,7 +8,7 @@ const Wallet = require('./Wallet');
 const Transaction = require('./Transaction');
 const IncomeTransaction = require('./IncomeTransaction');
 const WalletSettings = require('./WalletSettings');
-// Models/tables
+const Orders = require('./Orders');
 
 db.User = User;
 db.Ticket = Ticket;
@@ -18,6 +18,7 @@ db.Wallet = Wallet;
 db.Transaction = Transaction;
 db.IncomeTransaction = IncomeTransaction;
 db.WalletSettings = WalletSettings;
+db.Orders = Orders;
 
 
 // For the first time when tables are empty

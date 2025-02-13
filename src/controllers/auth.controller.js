@@ -50,7 +50,7 @@ exports.userLogin = async (req, res, next) => {
         res
             .status(200)
             .cookie("accessToken", token, cookieOptions)
-            .json(new ApiResponse(200, user, "You are successfully logged in"))
+            .json(new ApiResponse(200, { user, token }, "You are successfully logged in"))
 
     } catch (error) {
         next(error);
