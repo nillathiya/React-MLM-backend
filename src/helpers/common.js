@@ -67,6 +67,7 @@ common.requestFieldsValidation = async (fields = [], postData = {}) => {
 
 common.mangeWalletAmounts = async (userId, slug, amount) => {
   try {
+
     const currentUser = await User.findOne({ _id: userId });
     if (!currentUser) {
       return {
@@ -101,12 +102,18 @@ common.mangeWalletAmounts = async (userId, slug, amount) => {
         return { status: 0, message: "Wallet not created" };
       }
     } else {
+
       const oldAmount = wallet[walletColumn];
+
       let newAmount = oldAmount || 0;
       if (amount > 0) {
         newAmount = oldAmount + amount;
       } else {
         newAmount = oldAmount - Math.abs(amount);
+      }
+
+      if (newAmount < 0) {
+        return { status: 0, message: "Wallet don't have enough Balance" };
       }
       // update wallet
       const walletUpdatedData = {

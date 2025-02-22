@@ -37,9 +37,10 @@ const verifyJwt = async (req, res, next) => {
       next();
     } catch (error) {
       console.log("Token is Expired");
-      throw new ApiError(400, error.message || "Invalid access token");
+      throw new ApiError(401, error.message || "Invalid access token");
     }
   } catch (error) {
+    console.log("error",error)
     next(error);
   }
 };

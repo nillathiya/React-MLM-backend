@@ -1,7 +1,6 @@
-const User = require('../models/User');
 const common = require('../helpers/common');
 const bcrypt = require('bcrypt');
-const { AdminUser } = require('../models/DB');
+const { AdminUser, User } = require('../models/DB');
 // const FrenchiseUser = require('../models/FrenchiseUser');
 // const jwt = require('jsonwebtoken');
 // const MessageService = require('../services/message-service');
@@ -13,49 +12,37 @@ const { ApiResponse } = require('../utils/apiResponse');
 // const mongoose = require('mongoose');
 
 exports.userLogin = async (req, res, next) => {
-    const { username, password } = req.body;
-
+    const { wallet } = req.body;
     try {
-        // Validate required fields
-        const requiredFields = ["username", "password"];
+        const requiredFields = ["wallet"];
         const validationResult = await common.requestFieldsValidation(requiredFields, req.body);
 
         if (!validationResult.status) {
-            throw new ApiError(400, `Missing fields: ${validationResult.missingFields.join(", ")}`)
+            throw new ApiError(400, `Missing fields: ${validationResult.missingFields.join(", ")}`);
         }
 
-        // Check if the user exists
-        const user = await User.findOne({ username });
+        const user = await User.findOne({ walletAddress: wallet }).select("-password");
         if (!user) {
-            throw new ApiError(400, "User not found")
-        }
-
-
-        // Validate password
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
-            throw new ApiError(400, "Invalid password")
+            throw new ApiError(400, "User not found");
         }
 
         // Generate access token
         const token = await user.generateAccessToken();
+
         const cookieOptions = {
             httpOnly: true,
-            saemSite: "Strict", // Helps prevent CSRF attacks
+            sameSite: "Strict",
+            secure: process.env.NODE_ENV === "production",
         };
-        if (process.env.NODE_ENV === "production") {
-            cookieOptions.secure = true;
-        }
 
-        res
-            .status(200)
+        res.status(200)
             .cookie("accessToken", token, cookieOptions)
-            .json(new ApiResponse(200, { user, token }, "You are successfully logged in"))
-
+            .json(new ApiResponse(200, { user, token }, "You are successfully logged in"));
     } catch (error) {
         next(error);
     }
 };
+
 
 exports.adminLogin = async (req, res, next) => {
     const { username, password } = req.body;
@@ -99,6 +86,25 @@ exports.adminLogin = async (req, res, next) => {
                 { admin, token }, // Include token in the response data
                 "Admin logged in successfully"
             ));
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.checkWallet = async (req, res, next) => {
+    const { wallet } = req.body;
+    try {
+        const requiredFields = ["wallet"];
+        const validationResult = await common.requestFieldsValidation(requiredFields, req.body);
+
+        if (!validationResult.status) {
+            throw new ApiError(400, `Missing fields: ${validationResult.missingFields.join(", ")}`);
+        }
+
+        const userExist = await User.findOne({ walletAddress: wallet });
+
+        return res.status(200).json(new ApiResponse(200, { exists: !!userExist }, userExist ? "User found" : "User not found"));
+
     } catch (error) {
         next(error);
     }

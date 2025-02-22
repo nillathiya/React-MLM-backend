@@ -10,6 +10,7 @@ const routes = require("./routes");
 const { handleFileUploadError } = require("./utils/multer");
 const {errorMiddleware}=require('./middlewares/error.middleware');
 const cors = require("cors");
+const envConfig = require("./config/envConfig");
 
 const app = express();
 const server = http.createServer(app);
@@ -60,7 +61,7 @@ app.use(routes);
 app.use(handleFileUploadError);
 app.use(errorMiddleware);
 
-const PORT = process.env.PORT || 5000;
+const PORT = envConfig.PORT || 5000;
 server.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
 
 module.exports = app;

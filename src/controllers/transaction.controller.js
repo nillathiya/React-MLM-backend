@@ -2,7 +2,8 @@ const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
 // import { REQUIRED_FIELD } from "../../../helpers/APIConstant";
 const common = require('../helpers/common');
-const { Users, Transaction, FundTransaction, IncomeTransaction, WalletSettings, Wallet } = require('../models/DB');
+const { User, Transaction, FundTransaction, IncomeTransaction, WalletSettings, Wallet } = require('../models/DB');
+const transactionHelper = require('../helpers/transaction');
 
 
 exports.getAllTransactions = async (req, res, next) => {
@@ -159,6 +160,263 @@ exports.getAllFundTransactions = async (req, res, next) => {
     }
 };
 
+exports.verifyTransaction = async (req, res, next) => {
+    const userId = req.user?._id;
+    try {
+        const { txHash, amount, userAddress } = req.body;
+
+        // Verify transaction
+        const status = await transactionHelper.verify(txHash, amount, userAddress);
+
+        // Insert transaction record in MongoDB
+        const transaction = new Transaction({
+            walletType: "fund_wallet",
+            txType: "user_add_fund",
+            debitCredit: "credit",
+            uCode: userId,
+            amount,
+            paymentSlip: `${amount} USDT`,
+            criptAddress: userAddress,
+            criptoType: "USDT",
+            status,
+            txRecord: txHash,
+            remark: status ? "Fund Added" : "Transaction Failed",
+        });
+
+        await transaction.save();
+
+        const populatedTransaction = await Transaction.findById(transaction._id)
+            .populate("txUCode", "name email contactNumber username")
+            .populate("uCode", "name email contactNumber username");
+
+
+        if (status === 1) {
+            return res.status(200).json(new ApiResponse(200, populatedTransaction, "USDT added Successfully"));
+        } else {
+            throw new ApiError(400, "Transaction verification failed")
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.userFundTransfer = async (req, res, next) => {
+    const vsuser = req.user;
+    const postData = req.body;
+    try {
+        // Validate required fields
+        const validateFields = ["username", "amount", "walletType", "txType"];
+        const response = await common.requestFieldsValidation(validateFields, postData);
+
+        if (!response.status) {
+            throw new ApiError(400, `Missing fields: ${response.missingFields.join(", ")}`)
+        }
+
+        if (isNaN(postData.amount) || postData.amount <= 0) {
+            throw new ApiError(400, "Amount must be a valid positive number")
+        }
+
+        // const userId = postData.userId;
+        const receiverUser = await User.findOne({ username: postData.username });
+        if (!receiverUser) {
+            throw new ApiError(400, "Receiver User is not found");
+        }
+
+        const walletSettingTable = await WalletSettings.find({});
+        if (!walletSettingTable.length) {
+            throw new ApiError(400, "Wallet settings not configured");
+        }
+
+        // sender wallet
+        const userWallet = await Wallet.findOne({ uCode: vsuser._id });
+        // receiver wallet
+        let userToWallet = await Wallet.findOne({ uCode: receiverUser._id });
+
+        if (!userWallet) {
+            throw new ApiError(404, "your's wallet not found");
+        }
+
+        if (!userToWallet) {
+            const walletData = { uCode: receiverUser._id, username: receiverUser.username || 'Unknown' };
+            userToWallet = new Wallet(walletData);
+            await userToWallet.save();
+        }
+
+        let data = { mainWalletBalance: 0, fundWalletBalance: 0 };
+        data.mainWalletBalance = await common.getWalletBalance(walletSettingTable, userWallet, "main_wallet");
+        data.fundWalletBalance = await common.getWalletBalance(walletSettingTable, userWallet, "fund_wallet");
+
+        // Check for sufficient balance
+        if (postData.walletType === "fund_wallet" && data.fundWalletBalance < postData.amount) {
+            throw new ApiError(404, "Insufficient funds in the fund wallet");
+        }
+
+        if (postData.walletType === "main_wallet" && data.mainWalletBalance < postData.amount) {
+            throw new ApiError(404, "Insufficient funds in the main wallet");
+        }
+
+        // Prepare the transaction payload
+        const transactionPayload = {
+            txUCode: receiverUser._id,
+            uCode: vsuser._id,
+            txType: postData?.txType || "user_fund_transfer",
+            debitCredit: "DEBIT",
+            walletType: postData.walletType,
+            amount: postData.amount,
+            method: "ONLINE",
+            status: 1,
+            isRetrieveFund: postData.isRetrieveFund || false,
+            txStatus: 1,
+            remark: `${vsuser.username} sent $${postData.amount} to ${receiverUser.username}`
+        };
+
+        // Get last transaction details
+        const lastTransaction = await FundTransaction.findOne({
+            uCode: vsuser._id,
+            txType: postData.txType
+        }).sort({ createdAt: -1 });
+
+        transactionPayload.currentWalletBalance = lastTransaction?.currentWalletBalance || 0;
+        transactionPayload.postWalletBalance = lastTransaction?.currentWalletBalance || 0;
+
+        // if (postData.debitCredit === "DEBIT") {
+        transactionPayload.currentWalletBalance =
+            transactionPayload.currentWalletBalance - postData.amount;
+        // } else {
+        //   transactionPayload.currentWalletBalance =
+        //     transactionPayload.currentWalletBalance + postData.amount;
+        // }
+
+        // if (transactionPayload.currentWalletBalance < 0) {
+        //   return res.status(400).json({
+        //     status: "error",
+        //     message: "Insufficient balance after transaction",
+        //   });
+        // }
+
+        // Create a new transaction record
+        const newTransaction = new FundTransaction(transactionPayload);
+        const tResponse = await newTransaction.save();
+        if (!tResponse) {
+            throw new ApiError(500, "Failed to create transaction")
+        }
+
+        const populatedTransaction = await FundTransaction.findById(tResponse._id)
+            .populate("uCode", "username")
+            .exec();
+
+        // Add funds to receiver wallet
+        const manageReceiverTransaction = await common.mangeWalletAmounts(receiverUser._id, postData.walletType, postData.amount);
+
+        // Debit amount from sender wallet
+        const transferAmount = postData.amount;
+        const senderUserAmount = -transferAmount;
+        const manageSenderTransaction = await common.mangeWalletAmounts(vsuser._id, postData.walletType, senderUserAmount);
+
+        if (!manageSenderTransaction.status) {
+            throw new ApiError(500, "Failed to debit amount from sender's wallet. Please try again.");
+        }
+
+        if (!manageReceiverTransaction.status) {
+            throw new ApiError(500, "Failed to credit amount to receiver's wallet. Please try again.");
+        }
+
+        res.status(200).json(new ApiResponse(200, populatedTransaction, "Transaction completed successfully"));
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.userConvertFunds = async (req, res, next) => {
+    const vsuser = req.user;
+    const postData = req.body;
+    try {
+        const validateFields = ["amount", "walletType", "fromWalletType", "txType"];
+        const response = await common.requestFieldsValidation(
+            validateFields,
+            postData
+        );
+        if (!response.status) {
+            throw new ApiError(400, `Missing fields: ${response.missingFields.join(", ")}`)
+        }
+
+        const userId = vsuser._id;
+        const walletSettingTable = await WalletSettings.find({});
+        if (!walletSettingTable.length) {
+            throw new ApiError(400, "Wallet Settings not found")
+        }
+        const userWallet = await Wallet.findOne({
+            uCode: userId,
+        });
+        if (!userWallet) {
+            throw new ApiError(400, "Wallet not found");
+        }
+
+        const fromWalletType = postData.fromWalletType;
+        const walletType = postData.walletType;
+
+        const fromWalletBalance = common.getWalletBalance(
+            walletSettingTable,
+            userWallet,
+            fromWalletType
+        );
+
+        if (fromWalletBalance < postData.amount) {
+            throw new ApiError(400, "Insufficient balance")
+        }
+
+        // from wallet
+        const amount = parseFloat(postData.amount);
+        const transferAmount = 0 - amount;
+        const mangeFromWalletTransaction = await common.mangeWalletAmounts(
+            userId,
+            fromWalletType,
+            transferAmount
+        );
+        if (!mangeFromWalletTransaction.status) {
+            throw new ApiError(400, mangeWalletTransaction.message || "Transaction Failed.Please try later")
+        }
+
+        const mangeWalletTransaction = await common.mangeWalletAmounts(
+            userId,
+            walletType,
+            amount
+        );
+        if (!mangeWalletTransaction.status) {
+            throw new ApiError(400, mangeWalletTransaction.message || "Transaction Failed.Please try later")
+        }
+
+        const transactionPayload = {
+            uCode: userId,
+            txType: postData.txType,
+            debitCredit: "DEBIT",
+            walletType: walletType,
+            fromWalletType: fromWalletType,
+            amount: postData.amount,
+            method: "ONLINE",
+            status: 1,
+            isRetrieveFund: false,
+            remark: `${vsuser.username} converted $${postData.amount} from ${fromWalletType} to ${walletType}`,
+        };
+
+        const newTransaction = new FundTransaction(transactionPayload);
+        const tResponse = await newTransaction.save();
+        if (!tResponse) {
+            throw new ApiError(400, "Transaction Failed.Please try later")
+
+        }
+        const populatedTransaction = await FundTransaction.findById(tResponse._id)
+            .populate("uCode", "username")
+            .exec();
+        return res.status(200).json(new ApiResponse(200, populatedTransaction, "Fund Convert successfully"));
+    } catch (err) {
+        next(err)
+    }
+};
+
+
+
+
 // routeHandler.updateFundTransaction = async (req, res) => {
 //     const vsuser = req.vsuser;
 //     const postData = req.body;
@@ -305,6 +563,21 @@ exports.getAllFundTransactions = async (req, res, next) => {
 //     }
 // };
 
+exports.getTransactionsByUser = async (req, res, next) => {
+    const vsuser = req.user;
+    try {
+        const allTransactions = await Transaction.find({ uCode: vsuser._id })
+            .populate("txUCode", "name email contactNumber username")
+            .populate("uCode", "name email contactNumber username");
+
+
+        return res.status(200).json(new ApiResponse(200, allTransactions, "Fetch User All Transactions successfully"));
+    } catch (err) {
+        next(err);
+    }
+};
+
+
 exports.getFundTransactionsByUser = async (req, res, next) => {
     const vsuser = req.user;
     try {
@@ -315,7 +588,7 @@ exports.getFundTransactionsByUser = async (req, res, next) => {
 
         return res.status(200).json(new ApiResponse(200, allTransactions, "Fetch User All Transactions successfully"));
     } catch (err) {
-       next(err);
+        next(err);
     }
 };
 
@@ -561,276 +834,7 @@ exports.getFundTransactionsByUser = async (req, res, next) => {
 //     }
 // };
 
-// routeHandler.userFundTransfer = async (req, res) => {
-//     const vsuser = req.vsuser;
-//     const postData = req.body;
-//     try {
-//         // Validate required fields
-//         const validateFields = ["userId", "amount", "walletType", "txType"];
-//         const response = await common.requestFieldsValidation(validateFields, postData);
 
-//         if (!response.status) {
-//             return res.status(400).json({
-//                 status: "error",
-//                 message: "Required fields missing",
-//             });
-//         }
-
-//         if (isNaN(postData.amount) || postData.amount <= 0) {
-//             return res.status(400).json({
-//                 status: "error",
-//                 message: "Amount must be a valid positive number",
-//             });
-//         }
-
-//         const userId = postData.userId;
-//         const currentUser = await Users.findOne({ _id: userId });
-//         if (!currentUser) {
-//             return res.status(404).json({
-//                 status: "error",
-//                 message: "User not found",
-//             });
-//         }
-
-//         const walletSettingTable = await WalletSettings.find({});
-//         if (!walletSettingTable.length) {
-//             return res.status(404).json({
-//                 status: "error",
-//                 message: "Wallet settings not configured",
-//             });
-//         }
-
-//         // sender wallet
-//         const userWallet = await Wallet.findOne({ uCode: vsuser._id });
-//         // receiver wallet
-//         let userToWallet = await Wallet.findOne({ uCode: userId });
-
-//         if (!userWallet) {
-//             return res.status(404).json({
-//                 status: "error",
-//                 message: "Sender's wallet not found",
-//             });
-//         }
-
-//         if (!userToWallet) {
-//             const walletData = { uCode: userId, username: postData.username || 'Unknown' }; // Ensure `username` is handled
-//             userToWallet = new Wallet(walletData);
-//             await userToWallet.save();
-//         }
-
-//         let data = { mainWalletBalance: 0, fundWalletBalance: 0 };
-//         data.mainWalletBalance = await common.getWalletBalance(walletSettingTable, userWallet, "main_wallet");
-//         data.fundWalletBalance = await common.getWalletBalance(walletSettingTable, userWallet, "fund_wallet");
-
-//         // Check for sufficient balance
-//         if (postData.walletType === "fund_wallet" && data.fundWalletBalance < postData.amount) {
-//             return res.status(400).json({
-//                 status: "error",
-//                 message: "Insufficient funds in the fund wallet",
-//             });
-//         }
-
-//         if (postData.walletType === "main_wallet" && data.mainWalletBalance < postData.amount) {
-//             return res.status(400).json({
-//                 status: "error",
-//                 message: "Insufficient funds in the main wallet",
-//             });
-//         }
-
-//         // Prepare the transaction payload
-//         const transactionPayload = {
-//             txUCode: userId,
-//             uCode: vsuser._id,
-//             txType: postData?.txType || "user_fund_transfer",
-//             debitCredit: "DEBIT",
-//             walletType: postData.walletType,
-//             amount: postData.amount,
-//             method: "ONLINE",
-//             state: 1,
-//             isRetrieveFund: postData.isRetrieveFund || false,
-//             tsxType: postData?.tsxType,
-//         };
-
-//         // Get last transaction details
-//         const lastTransaction = await FundTransaction.findOne({
-//             uCode: vsuser._id,
-//             txType: postData.txType
-//         }).sort({ createdAt: -1 });
-
-//         transactionPayload.currentWalletBalance = lastTransaction?.currentWalletBalance || 0;
-//         transactionPayload.postWalletBalance = lastTransaction?.currentWalletBalance || 0;
-
-//         // if (postData.debitCredit === "DEBIT") {
-//         transactionPayload.currentWalletBalance =
-//             transactionPayload.currentWalletBalance - postData.amount;
-//         // } else {
-//         //   transactionPayload.currentWalletBalance =
-//         //     transactionPayload.currentWalletBalance + postData.amount;
-//         // }
-
-//         // if (transactionPayload.currentWalletBalance < 0) {
-//         //   return res.status(400).json({
-//         //     status: "error",
-//         //     message: "Insufficient balance after transaction",
-//         //   });
-//         // }
-
-//         // Create a new transaction record
-//         const newTransaction = new FundTransaction(transactionPayload);
-//         const tResponse = await newTransaction.save();
-//         if (!tResponse) {
-//             return res.status(500).json({
-//                 status: "error",
-//                 message: "Failed to create transaction",
-//             });
-//         }
-
-//         // Add funds to receiver wallet
-//         const manageReceiverTransaction = await common.mangeWalletAmounts(userId, postData.walletType, postData.amount);
-
-//         // Debit amount from sender wallet
-//         const transferAmount = postData.amount;
-//         const senderUserAmount = -transferAmount;
-//         const manageSenderTransaction = await common.mangeWalletAmounts(vsuser._id, postData.walletType, senderUserAmount);
-
-//         if (!manageSenderTransaction.status) {
-//             return res.status(500).json({
-//                 status: "error",
-//                 message: "Failed to debit amount from sender's wallet. Please try again.",
-//             });
-//         }
-
-//         if (!manageReceiverTransaction.status) {
-//             return res.status(500).json({
-//                 status: "error",
-//                 message: "Failed to credit amount to receiver's wallet. Please try again.",
-//             });
-//         }
-
-//         return res.status(200).json({
-//             status: "success",
-//             message: "Transaction completed successfully",
-//             data: tResponse,
-//         });
-//     } catch (err) {
-//         console.error(err);
-//         return res.status(500).json({
-//             status: "error",
-//             message: "Internal server error",
-//         });
-//     }
-// };
-
-// routeHandler.userConvertFunds = async (req, res) => {
-//     const vsuser = req.vsuser;
-//     const postData = req.body;
-//     try {
-//         const validateFields = ["amount", "walletType", "fromWalletType", "txType"];
-//         const response = await common.requestFieldsValidation(
-//             validateFields,
-//             postData
-//         );
-//         if (!response.status) {
-//             return res.json({
-//                 status: "error",
-//                 data: REQUIRED_FIELD,
-//             });
-//         }
-
-//         const userId = vsuser._id;
-//         const walletSettingTable = await WalletSettings.find({});
-//         if (!walletSettingTable.length) {
-//             return res.json({
-//                 status: 0,
-//                 message: "Wallet not found",
-//             });
-//         }
-//         const userWallet = await Wallet.findOne({
-//             uCode: userId,
-//         });
-//         if (!userWallet) {
-//             return res.json({
-//                 status: "error",
-//                 message: "Wallet not found",
-//             });
-//         }
-
-//         const fromWalletType = postData.fromWalletType;
-//         const walletType = postData.walletType;
-
-//         const fromWalletBalance = common.getWalletBalance(
-//             walletSettingTable,
-//             userWallet,
-//             fromWalletType
-//         );
-
-//         if (fromWalletBalance < postData.amount) {
-//             return res.json({
-//                 status: "error",
-//                 message: "Insufficient balance",
-//             });
-//         }
-
-//         // from wallet
-//         const amount = postData.amount;
-//         const transferAmount = 0 - amount;
-//         const mangeFromWalletTransaction = await common.mangeWalletAmounts(
-//             userId,
-//             fromWalletType,
-//             transferAmount
-//         );
-//         if (!mangeFromWalletTransaction.status) {
-//             return res.json({
-//                 status: "error",
-//                 message: "Server error",
-//             });
-//         }
-
-//         const mangeWalletTransaction = await common.mangeWalletAmounts(
-//             userId,
-//             walletType,
-//             amount
-//         );
-//         if (!mangeWalletTransaction.status) {
-//             return res.json({
-//                 status: "error",
-//                 message: "Server error",
-//             });
-//         }
-
-//         const transactionPayload = {
-//             uCode: userId,
-//             txType: postData.txType,
-//             debitCredit: "DEBIT",
-//             walletType: walletType,
-//             fromWalletType: fromWalletType,
-//             amount: postData.amount,
-//             method: "ONLINE",
-//             state: 1,
-//             isRetrieveFund: false,
-//         };
-
-//         const newTransaction = new FundTransaction(transactionPayload);
-//         const tResponse = await newTransaction.save();
-//         if (!tResponse) {
-//             return res.json({
-//                 status: "error",
-//                 message: "Server error",
-//             });
-//         }
-
-//         return res.json({
-//             status: "success",
-//             message: "Fund Convert successfully",
-//             data: tResponse,
-//         });
-//     } catch (err) {
-//         return res.json({
-//             status: "error",
-//             message: "Server error",
-//         });
-//     }
-// };
 
 // routeHandler.getWalletTransaction = async (req, res) => {
 //     const vsuser = req.vsuser;

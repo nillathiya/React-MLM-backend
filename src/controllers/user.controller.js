@@ -5,72 +5,49 @@ const bcrypt = require('bcrypt');
 const { PASSWORD_REGEX } = require('../helpers/constatnts');
 const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
-
-
+const crypto = require("crypto");
+const common = require('../helpers/common');
+ 
 // Register a new user
 exports.registerUser = async (req, res, next) => {
+    const { wallet, sponsorUsername } = req.body;
+
     try {
+        const requiredFields = ["wallet"];
+        const validationResult = await common.requestFieldsValidation(requiredFields, req.body);
 
-        const { username, email, password, city, contactNumber, name, gender, dob, state, country, address } = req.body;
-
-        // Validate input fields
-        if (!username || !email || !password) {
-            throw new ApiError(400, "Username, email, and password are required")
+        if (!validationResult.status) {
+            throw new ApiError(400, `Missing fields: ${validationResult.missingFields.join(", ")}`);
         }
 
-        // Check if the user already exists
-        const existingUser = await User.findOne({
-            $or: [{ email: email }, { username: username }, { contactNumber: contactNumber }]
-        });
-
+        const existingUser = await User.findOne({ walletAddress: wallet });
         if (existingUser) {
-            let message = "Mobile already exists";
+            throw new ApiError(400, "User with wallet address already exists");
+        }
 
-            if (existingUser.email === email) {
-                message = "Email already exists";
-            } else if (existingUser.username === username) {
-                message = "Username already exists";
+        let sponsorUser = null;
+        if (sponsorUsername) {
+            sponsorUser = await User.findOne({ username: sponsorUsername });
+            if (!sponsorUser) {
+                throw new ApiError(400, "Sponsor username not found");
             }
-
-            throw new ApiError(400, message)
         }
 
-        if (!PASSWORD_REGEX.test(password)) {
-            throw new ApiError(400, "Password must be 8-16 characters long and contain only letters and numbers.")
+        // Generate a unique random username
+        let username;
+        let isUsernameTaken = true;
+        while (isUsernameTaken) {
+            username = `user_${crypto.randomInt(100000, 999999)}`; // Generate random number
+            isUsernameTaken = await User.exists({ username }); // Check if exists
         }
 
-
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // Create the new user
         const newUser = await User.create({
-            username,
-            email,
-            password: hashedPassword,
-            city,
-            contactNumber,
-            name,
-            gender,
-            dob,
-            state,
-            country,
-            address
+            walletAddress: wallet,
+            username: username, // Assign generated username
+            uSponsor: sponsorUser ? sponsorUser._id : null,
         });
 
-        // Remove sensitive fields from response
-        const userResponse = {
-            username: newUser.username,
-            email: newUser.email,
-            name: newUser.name,
-            gender: newUser.gender,
-            dateOfBirth: newUser.dateOfBirth,
-            address: newUser.address,
-            contactNumber: newUser.contactNumber,
-        };
-
-        // Respond with success
-        res.status(201).json(new ApiResponse(200, userResponse, "user Registered successfully"))
+        res.status(201).json(new ApiResponse(200, { userId: newUser._id, username: username }, "User registered successfully"));
 
     } catch (error) {
         next(error);

@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const userSchema = new Schema(
     {
         parentId: { type: Schema.Types.ObjectId, ref: "User" },
+        uSponsor:{ type: Schema.Types.ObjectId, ref: "User" },
         name: String,
         email: String,
         password: String,
@@ -21,7 +22,7 @@ const userSchema = new Schema(
         },
         sponsor: String,
         country: String,
-        wallet_address: String,
+        walletAddress: String,
         address: String,
         withdraw_status: { type: Number, default: 1 },
         position: { type: Number, default: 0 },

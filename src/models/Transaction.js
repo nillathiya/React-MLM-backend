@@ -18,7 +18,7 @@ const transactionSchema = new Schema(
         paymentSlip: { type: String },
         tdsStatus: { type: Number, default: 0 },
         txsRes: { type: String },
-        tsxStatus: { type: String },
+        txStatus: { type: String },
         txNumber: { type: String },
         bankDetails: { type: String },
         panNumber: { type: String },

@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const uuid = require('uuid'); // Add a unique ID for file names
 const dateUtils = require('../helpers/dateUtils');
+const { ApiError } = require('../utils/apiError');
 
 // Configuration
 const uploadFolder = process.env.UPLOAD_FOLDER || path.resolve('./public/uploads');
@@ -47,22 +48,14 @@ const upload = multer({
     },
 });
 
-// Error handling for file upload
 const handleFileUploadError = (err, req, res, next) => {
     if (err instanceof multer.MulterError) {
-        // Handle multer-specific errors
-        return res.status(400).json({
-            status: 'error',
-            message: err.message,
-        });
-    } else if (err) {
-        // Handle other errors
-        return res.status(500).json({
-            status: 'error',
-            message: err.message,
-        });
+        return next(new ApiError(400, err.message));
     }
-    next();
+    if (err instanceof ApiError) {
+        return next(err);
+    }
+    next(err);
 };
 
 module.exports = { upload, handleFileUploadError };
