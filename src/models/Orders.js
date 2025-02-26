@@ -18,5 +18,4 @@ const ordersSchema = new Schema(
     }
 );
 
-
 module.exports = mongoose.model("Orders", ordersSchema);

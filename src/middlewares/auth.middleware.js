@@ -40,7 +40,7 @@ const verifyJwt = async (req, res, next) => {
       throw new ApiError(401, error.message || "Invalid access token");
     }
   } catch (error) {
-    console.log("error",error)
+    console.log("error", error)
     next(error);
   }
 };

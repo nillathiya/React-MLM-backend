@@ -9,6 +9,8 @@ const Transaction = require('./Transaction');
 const IncomeTransaction = require('./IncomeTransaction');
 const WalletSettings = require('./WalletSettings');
 const Orders = require('./Orders');
+const PinDetail = require('./PinDetail');
+const AdminSettings = require('./AdminSettings');
 
 db.User = User;
 db.Ticket = Ticket;
@@ -19,7 +21,8 @@ db.Transaction = Transaction;
 db.IncomeTransaction = IncomeTransaction;
 db.WalletSettings = WalletSettings;
 db.Orders = Orders;
-
+db.PinDetail = PinDetail;
+db.AdminSettings=AdminSettings;
 
 // For the first time when tables are empty
 for (let collectionname in db) {

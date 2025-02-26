@@ -7,7 +7,10 @@ const transactionRoutes = require('./transaction.route.js');
 const ordersRoutes = require('./orders.route.js');
 const withdrawalRoutes = require('./withdrawal.route.js');
 const walletSettingsRoutes = require('./walletSettings.route.js');
-const walletRoutes=require('./wallet.route.js');
+const walletRoutes = require('./wallet.route.js');
+const pinDetailRoutes = require('./pinDetail.route.js');
+const topUpRoutes = require('./topup.route.js');
+const adminSettingsRoutes = require('./adminSettings.route.js');
 
 router.use("/api/tickets", ticketRoutes);
 router.use("/api/user", userRoutes);
@@ -17,6 +20,9 @@ router.use("/api/orders", ordersRoutes);
 router.use("/api/withdrawal", withdrawalRoutes);
 router.use("/api/wallet-settings", walletSettingsRoutes);
 router.use("/api/wallet", walletRoutes);
+router.use("/api/pin-detail", pinDetailRoutes);
+router.use("/api/top-up", topUpRoutes);
+router.use("/api/admin-settings", adminSettingsRoutes);
 
 module.exports = router;
 

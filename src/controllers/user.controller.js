@@ -7,7 +7,7 @@ const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
 const crypto = require("crypto");
 const common = require('../helpers/common');
- 
+
 // Register a new user
 exports.registerUser = async (req, res, next) => {
     const { wallet, sponsorUsername } = req.body;
@@ -125,6 +125,20 @@ exports.get = async (req, res, next) => {
     }
 };
 
+exports.checkUsername = async (req, res, next) => {
+    try {
+        const { username } = req.body;
+        const user = await User.findOne({ username });
+        if (user) {
+            return res.status(200).json(new ApiResponse(200, { valid: true, activeStatus: user.activeStatus }, "check username successfully"))
+        } else {
+            throw new ApiError(404, "Username not found")
+        }
+    } catch (error) {
+        next(error)
+    }
+};
+
 // exports.getById = async (req, res) => {
 //     const { id } = req.params;
 
@@ -157,155 +171,117 @@ exports.get = async (req, res, next) => {
 //     }
 // };
 
-// exports.updateUser = async (req, res) => {
-//     try {
-//         const { id } = req.params;
-//         const updatedData = req.body;
-//         console.log("updatedData", updatedData);
+exports.updateUser = async (req, res,next) => {
+    try {
+        const { id } = req.params;
+        const updatedData = req.body;
+        console.log("updatedData", updatedData);
 
-//         const updateFields = {};
+        const updateFields = {};
 
-//         const user = await User.findById(id);
-//         if (!user) {
-//             return res.status(400).json({ status: "error", message: "User not found" });
-//         }
+        const user = await User.findById(id);
+        if (!user) {
+            throw new ApiError(404, "User not found")
+        }
 
-//         if (updatedData.editProfileWithOTP) {
-//             if (updatedData.mobile) {
-//                 if (!user.mobile) {
-//                     return res.status(400).json({ status: "error", message: "User does not have a registered mobile number." });
-//                 }
+        // Handle OTP verification if `editProfileWithOTP` is true
+        if (updatedData.editProfileWithOTP) {
+            const otpMsg = `Dear *${user.username}*,\n\nYour OTP for verifying ${updatedData.mobile ? "your mobile number change" : "your new mobile number"
+                } is: *{otp}*\n\nDo not share this code.\n\nBest,\nTeam SwissCorp`;
 
-//                 const otpMsg = `Dear *${user.username}*,\n\nYour OTP for verifying your mobile number change is: *{otp}*\n\nDo not share this code.\n\nBest,\nTeam SwissCorp`;
+            const mobile = updatedData.updatedMobile?.mobile || user.mobile;
+            const countryCode = updatedData.updatedMobile?.countryCode || user.address?.countryCode;
 
-//                 const sendOtpResponse = await controllerHelper.sendOtp(
-//                     user.address.countryCode,
-//                     user.mobile,
-//                     id.toString(),
-//                     otpMsg
-//                 );
+            if (!mobile) {
+                return res.status(400).json({ status: "error", message: "User does not have a registered mobile number." });
+            }
 
-//                 if (sendOtpResponse.otpSent) {
-//                     return res.status(200).json({
-//                         status: "success",
-//                         message: "OTP sent successfully to your mobile number.",
-//                         data: { userId: id.toString() },
-//                     });
-//                 }
-//                 return res.status(500).json({ status: "error", message: "Failed to send OTP.", error: sendOtpResponse.error || "Unknown error" });
-//             }
+            const sendOtpResponse = await controllerHelper.sendOtp(countryCode, mobile, id.toString(), otpMsg);
 
-//             if (updatedData.updatedMobile) {
-//                 const otpMsg = `Dear *${user.username}*,\n\nYour OTP for verifying your new mobile number is: *{otp}*\n\nDo not share this code.\n\nBest,\nTeam SwissCorp`;
+            if (sendOtpResponse.otpSent) {
+                return res.status(200).json({
+                    status: "success",
+                    message: "OTP sent successfully to your mobile number.",
+                    data: { userId: id.toString() },
+                });
+            }
+            return res.status(500).json({ status: "error", message: "Failed to send OTP.", error: sendOtpResponse.error || "Unknown error" });
+        }
 
-//                 const sendOtpResponse = await controllerHelper.sendOtp(
-//                     updatedData.updatedMobile.countryCode,
-//                     updatedData.updatedMobile.mobile,
-//                     id.toString(),
-//                     otpMsg
-//                 );
+        // Validate and hash password if provided
+        if (updatedData.password) {
+            if (!PASSWORD_REGEX.test(updatedData.password)) {
+                throw new ApiError(400, "Password must be 8-16 characters long and contain only letters and numbers.");
+            }
+            updateFields.password = await bcrypt.hash(updatedData.password, 10);
+        }
 
-//                 if (sendOtpResponse.otpSent) {
-//                     return res.status(200).json({
-//                         status: "success",
-//                         message: "OTP sent successfully to your new mobile number.",
-//                         data: { userId: id.toString() },
-//                     });
-//                 }
-//                 return res.status(500).json({ status: "error", message: "Failed to send OTP.", error: sendOtpResponse.error || "Unknown error" });
-//             }
-//         }
+        // Check for existing user with the same email, username, or mobile (excluding self)
+        const existingUser = await User.findOne({
+            _id: { $ne: id },
+            $or: [
+                updatedData.email ? { email: updatedData.email } : null,
+                updatedData.username ? { username: updatedData.username } : null,
+                updatedData.mobile ? { mobile: updatedData.mobile } : null,
+            ].filter(Boolean),
+        });
 
-//         // Validate and hash password
-//         if (updatedData.password) {
-//             const passwordRegex = /^[A-Za-z0-9]{8,16}$/;
-//             if (!passwordRegex.test(updatedData.password)) {
-//                 return res.status(400).json({
-//                     status: "error",
-//                     message: "Password must be 8-16 characters long and contain only letters and numbers.",
-//                 });
-//             }
-//             updatedData.password = await bcrypt.hash(updatedData.password, 10);
-//             updateFields.password = updatedData.password;
-//         }
+        if (existingUser) {
+            let message = "Mobile already exists";
+            if (existingUser.email === updatedData.email) message = "Email already exists";
+            if (existingUser.username === updatedData.username) message = "Username already exists";
 
-//         // Check if email, username, or mobile already exists (ignoring null values)
-//         const existingUser = await User.findOne({
-//             $or: [
-//                 updatedData.email ? { email: updatedData.email } : null,
-//                 updatedData.username ? { username: updatedData.username } : null,
-//                 updatedData.mobile ? { mobile: updatedData.mobile } : null,
-//             ].filter(Boolean),
-//         });
+            throw new ApiError(400, message);
+        }
 
-//         if (existingUser && existingUser._id.toString() !== id) {
-//             let message = "Mobile already exists";
-//             if (existingUser.email === updatedData.email) message = "Email already exists";
-//             if (existingUser.username === updatedData.username) message = "Username already exists";
+        // Convert stringified JSON fields into objects
+        ["accountStatus", "emailVerification"].forEach((field) => {
+            if (typeof updatedData[field] === "string") {
+                try {
+                    updatedData[field] = JSON.parse(updatedData[field]);
+                } catch (error) {
+                    console.error(`Invalid JSON for ${field}:`, error);
+                }
+            }
+        });
 
-//             return res.status(400).json({ status: "error", message });
-//         }
+        // Dynamically update nested fields
+        Object.entries(updatedData.accountStatus || {}).forEach(([key, value]) => {
+            updateFields[`accountStatus.${key}`] = value;
+        });
 
-//         // Parse accountStatus and emailVerification if sent as strings
-//         ["accountStatus", "emailVerification"].forEach((field) => {
-//             if (typeof updatedData[field] === "string") {
-//                 try {
-//                     updatedData[field] = JSON.parse(updatedData[field]);
-//                 } catch (error) {
-//                     console.error(`Invalid JSON for ${field}:`, error);
-//                 }
-//             }
-//         });
+        Object.entries(updatedData.emailVerification || {}).forEach(([key, value]) => {
+            updateFields[`emailVerification.${key}`] = value;
+        });
 
-//         // Dynamically add nested fields
-//         if (updatedData.accountStatus) {
-//             Object.keys(updatedData.accountStatus).forEach((key) => {
-//                 updateFields[`accountStatus.${key}`] = updatedData.accountStatus[key];
-//             });
-//         }
+        if (updatedData.adminRegisterStatus !== undefined) {
+            updateFields.adminRegisterStatus = updatedData.adminRegisterStatus;
+        }
 
-//         if (updatedData.emailVerification) {
-//             Object.keys(updatedData.emailVerification).forEach((key) => {
-//                 updateFields[`emailVerification.${key}`] = updatedData.emailVerification[key];
-//             });
-//         }
+        // Handle address updates
+        Object.entries(updatedData.address || {}).forEach(([key, value]) => {
+            updateFields[`address.${key}`] = value;
+        });
 
-//         if (updatedData.adminRegisterStatus !== undefined) {
-//             updateFields["adminRegisterStatus"] = updatedData.adminRegisterStatus;
-//         }
+        // Update basic fields dynamically
+        ["username", "name", "email", "mobile", "gender", "dateOfBirth"].forEach((field) => {
+            if (updatedData[field] !== undefined) {
+                updateFields[field] = updatedData[field];
+            }
+        });
 
-//         if (updatedData.address) {
-//             Object.keys(updatedData.address).forEach((key) => {
-//                 updateFields[`address.${key}`] = updatedData.address[key];
-//             });
-//         }
+        const updatedUser = await User.findByIdAndUpdate(id, updateFields, { new: true });
 
-//         // Add other basic fields
-//         ["username", "name", "email", "mobile", "gender", "dateOfBirth"].forEach((field) => {
-//             if (updatedData[field] !== undefined) {
-//                 updateFields[field] = updatedData[field];
-//             }
-//         });
+        if (!updatedUser) {
+            throw new ApiError(400, "User not found");
+        }
 
-//         const updatedUser = await User.findByIdAndUpdate(id, updateFields, { new: true });
+        return res.status(200).json(new ApiResponse(200, updatedUser, "User updated successfully"))
 
-//         if (!updatedUser) {
-//             return res.status(404).json({ status: "error", message: "User not found" });
-//         }
-
-//         res.status(200).json({
-//             status: "success",
-//             message: "User updated successfully",
-//             user: updatedUser,
-//         });
-//     } catch (error) {
-//         res.status(500).json({
-//             status: "error",
-//             message: "Internal server error",
-//             error: error.message,
-//         });
-//     }
-// };
+    } catch (error) {
+        next(error)
+    }
+};
 
 
 // // Delete user

@@ -1,307 +1,254 @@
 // import { authMiddleware } from "../../../lib/authMiddleware";
-const {FundTransaction,Wallet,WalletSettings}=require('../models/DB');
-const common =require('../helpers/common');
+const { FundTransaction, Wallet, WalletSettings, AdminSettings } = require('../models/DB');
+const common = require('../helpers/common');
 const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
 // import { REQUIRED_FIELD } from "../../../helpers/APIConstant";
 // import { isEmpty } from "lodash";
 
-exports.createRequest = async (req, res,next) => {
+exports.createRequest = async (req, res, next) => {
   const vsuser = req.user;
   const postData = req.body;
   try {
     const validateFields = ["txType", "debitCredit", "amount", "walletType"];
-    const response = await common.requestFieldsValidation(
-      validateFields,
-      postData
-    );
+    const response = await common.requestFieldsValidation(validateFields, postData);
+
     if (!response.status) {
-        throw new ApiError(400, `Missing fields: ${response.missingFields.join(", ")}`)
+      throw new ApiError(400, `Missing fields: ${response.missingFields.join(", ")}`);
     }
 
-    const data = {
-      uCode: vsuser._id,
-    };
-    if (postData.txUCode) {
-      data.txUCode = postData.txUCode;
+    if (postData.amount <= 0) {
+      throw new ApiError(400, "Amount must be greater than zero");
     }
-
-    [
-      "txType",
-      "debitCredit",
-      "amount",
-      "walletType",
-      "method",
-      "paymentSlip",
-      "txNumber",
-    ].forEach((item) => {
-      if (postData[item] != undefined && postData[item] != "") {
-        data[item] = postData[item];
-      }
-    });
 
     const walletSettingTable = await WalletSettings.find({});
     if (!walletSettingTable.length) {
-      throw new ApiError(400,  "Wallet not found")
+      throw new ApiError(404, "Wallet settings not found");
     }
-    const userWallet = await Wallet.findOne({
-      uCode: vsuser._id,
-    });
+
+    const userWallet = await Wallet.findOne({ uCode: vsuser._id });
     if (!userWallet) {
-        throw new ApiError(400,  "Wallet not found")
-      
+      throw new ApiError(404, "Wallet not found");
     }
+
     const walletType = postData.walletType;
-    const currentWalletBalance = common.getWalletBalance(
-      walletSettingTable,
-      userWallet,
-      walletType
-    );
+    const currentWalletBalance = common.getWalletBalance(walletSettingTable, userWallet, walletType);
+
+    const WithdrawalChargeSettings = await AdminSettings.findOne({ slug: "withdrawal_charge" });
+    if (!WithdrawalChargeSettings) {
+      throw new ApiError(404, "Withdrawal charge settings not found");
+    }
+
 
     if (postData.amount > currentWalletBalance) {
-        throw new ApiError(400, "Insufficient balance")
+      throw new ApiError(400, "Insufficient balance");
     }
-    //
-    const transferAmount = 0 - postData.amount;
-    const mangeTransaction = await common.mangeWalletAmounts(
-      vsuser._id,
-      walletType,  
-      transferAmount
-    );
+
+    const transferAmount = -postData.amount;
+    const mangeTransaction = await common.mangeWalletAmounts(vsuser._id, walletType, transferAmount);
+
     if (!mangeTransaction.status) {
-        throw new ApiError(400,  mangeTransaction.message)
+      throw new ApiError(400, mangeTransaction.message);
     }
 
-    data.postWalletBalance = currentWalletBalance;
+    // Update wallet balance before storing transaction
+    const updatedWalletBalance = currentWalletBalance - postData.amount;
 
-    data.currentWalletBalance = currentWalletBalance - postData.amount;
-    const transaction = new FundTransaction(data);
-    const newTransaction = await transaction.save();
+    const totalCharge = parseFloat(((WithdrawalChargeSettings.value * postData.amount) / 100).toFixed(2));
 
-    return res.status(200).json(new ApiResponse(200,newTransaction,"success"))
+    const AdminCharge = parseFloat(((10 / WithdrawalChargeSettings.value) * totalCharge).toFixed(2));
+    const wPoolCharge = parseFloat(((5 / WithdrawalChargeSettings.value) * totalCharge).toFixed(2));
+
+
+    const newTransactionData = {
+      uCode: vsuser._id,
+      postWalletBalance: updatedWalletBalance,
+      currentWalletBalance: updatedWalletBalance,
+      txType: postData.txType,
+      debitCredit: "DEBIT",
+      walletType: postData.walletType,
+      amount: postData.amount - totalCharge,
+      txCharge: AdminCharge,
+      wPool: wPoolCharge,
+      remark: `Transaction ${postData.txType} of ${postData.amount} for ${walletType}`
+    };
+
+
+    const transaction = new FundTransaction(newTransactionData);
+    const tResponse = await transaction.save();
+
+    if (!tResponse) {
+      throw new ApiError(400, "Transaction Failed. Please try later");
+    }
+
+    const populatedTransaction = await FundTransaction.findById(tResponse._id)
+      .populate("uCode", "username name")
+      .exec();
+
+    return res.status(200).json(new ApiResponse(200, populatedTransaction, "Withdrawal request sent successfully"));
   } catch (err) {
-     next(err) 
-}
+    next(err);
+  }
 };
 
-// routeHandler.updateTransactions = async (req, res) => {
-//   const postData = req.body;
+exports.updateRequest = async (req, res, next) => {
+  const postData = req.body;
 
-//   try {
-//     // Check if the user is an admin
-//     if (!req._IS_ADMIN_ACCOUNT) {
-//       throw new ApiError(401,"Unauthorized access");
-//     }
+  try {
+    if (!req._IS_ADMIN_ACCOUNT) {
+      throw new ApiError(401, "Unauthorized access");
+    }
 
-//     // Validate required fields
-//     const validateFields = ["id"];
-//     const response = await common.requestFieldsValidation(validateFields, postData);
-//     if (!response.status) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Required field(s) missing: id",
-//       });
-//     }
+    // Validate required fields
+    const validateFields = ["id"];
+    const response = await common.requestFieldsValidation(validateFields, postData);
+    if (!response.status) {
+      throw new ApiError(400, `Missing fields: ${response.missingFields.join(", ")}`);
+    }
 
-//     // Ensure the ID is a valid ObjectId
-//     if (!postData.id.match(/^[0-9a-fA-F]{24}$/)) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Invalid transaction ID format",
-//       });
-//     }
+    // Ensure the ID is a valid ObjectId
+    if (!postData.id.match(/^[0-9a-fA-F]{24}$/)) {
+      throw new ApiError(400, "Invalid transaction ID format");
+    }
 
-//     // Fetch the transaction by ID
-//     const transaction = await FundTransaction.findById(postData.id);
-//     if (!transaction) {
-//       return res.status(404).json({
-//         status: "error",
-//         message: "Transaction not found",
-//       });
-//     }
+    // Fetch the transaction by ID
+    const transaction = await FundTransaction.findById(postData.id);
+    if (!transaction) {
+      throw new ApiError(404, "Transaction not found");
+    }
+    console.log("transaction", transaction)
 
-//     // Handle wallet update if transaction is canceled (status = 2)
-//     if (postData.status === 2) {
-//       const manageTransaction = await common.mangeWalletAmounts(
-//         transaction.uCode,
-//         transaction.walletType,
-//         transaction.amount
-//       );
+    // Handle wallet update if transaction is canceled (status = 2)
+    if (parseInt(postData.status, 10) === 2) {
+      const refundAmount = transaction.amount + Number(transaction.txCharge || 0);
+      const manageTransaction = await common.mangeWalletAmounts(
+        transaction.uCode,
+        transaction.walletType,
+        refundAmount
+      );
 
-//       if (!manageTransaction.status) {
-//         return res.status(400).json({
-//           status: "error",
-//           message: manageTransaction.message,
-//         });
-//       }
-//     }
+      if (!manageTransaction.status) {
+        throw new ApiError(400, manageTransaction.message);
+      }
+    }
 
-//     // Prepare the fields to update
-//     const set = {};
-//     ["status", "response"].forEach((field) => {
-//       if (postData[field] !== undefined && postData[field] !== "") {
-//         set[field] = postData[field];
-//       }
-//     });
+    // Prepare the fields to update
+    const set = {};
+    ["status", "response"].forEach((field) => {
+      if (postData[field] !== undefined && postData[field] !== "") {
+        set[field] = postData[field];
+      }
+    });
 
-//     // Update the transaction
-//     const updatedTransaction = await FundTransaction.findByIdAndUpdate(
-//       postData.id,
-//       { $set: set },
-//       { new: true }
-//     );
+    // Update the transaction
+    const updatedTransaction = await FundTransaction.findByIdAndUpdate(
+      postData.id,
+      { $set: set },
+      { new: true }
+    );
 
-//     if (!updatedTransaction) {
-//       return res.status(500).json({
-//         status: "error",
-//         message: "Failed to update the transaction",
-//       });
-//     }
+    if (!updatedTransaction) {
+      throw new ApiError(500, "Failed to update the transaction");
+    }
 
-//     // Return success response
-//     return res.status(200).json({
-//       status: "success",
-//       message: "Transaction updated successfully",
-//       data: updatedTransaction,
-//     });
-//   } catch (err) {
-//     console.error("Error updating transaction:", { error: err, postData });
-//     return res.status(500).json({
-//       status: "error",
-//       message: "Server error",
-//     });
-//   }
-// };
+    const populatedTransaction = await FundTransaction.findById(updatedTransaction._id)
+      .populate("uCode", "username name")
+      .exec();
 
-// routeHandler.getTransactions = async (req, res) => {
-//   const vsuser = req.vsuser;
-//   const postData = req.body;
-//   try {
-//     if (req._IS_ADMIN_ACCOUNT) {
-//       if (isEmpty(postData)) {
-//         const allTransactions = await FundTransaction.find({
-//           txType: "withdrawal",
-//         })
-//           .populate("txUCode", "name email contactNumber username")
-//           .populate("uCode", "name email contactNumber username");
-//         return res.json({
-//           status: "success",
-//           data: allTransactions,
-//         });
-//       } else {
-//         const allTransactions = await FundTransaction.find({
-//           txType: "withdrawal",
-//           status: postData.status,
-//         })
-//           .populate("txUCode", "name email contactNumber username")
-//           .populate("uCode", "name email contactNumber username");
-//         return res.json({
-//           status: "success",
-//           data: allTransactions,
-//         });
-//       }
-//     }
-//     const allTransactions = await FundTransaction.find({
-//       txType: "withdrawal",
-//       uCode: vsuser._id,
-//     })
-//       .populate("txUCode", "name email contactNumber username")
-//       .populate("uCode", "name email contactNumber username");
-    
-//     if (allTransactions.length === 0) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "No transactions found",
-//       });
-//     }
+    return res.status(200).json(new ApiResponse(200, populatedTransaction, "Transaction updated successfully"));
+  } catch (err) {
+    next(err)
+  }
+};
 
-//     return res.json({
-//       status: "success",
-//       data: allTransactions,
-//     });
-//   } catch (err) {
-//     res.json({
-//       status: "error",
-//       message: "Server error",
-//     });
-//   }
-// };
+exports.getAllWithdrawalTransactions = async (req, res, next) => {
+  const vsuser = req.user;
+  const postData = req.body;
 
-// routeHandler.deleteTransaction = async (req, res) => {
-//   const postData = req.body;
-//   try {
-//     // Check if the user is an admin
-//     if (!req._IS_ADMIN_ACCOUNT) {
-//       return res.status(401).json({
-//         status: "error",
-//         message: "Unauthorized access",
-//       });
-//     }
+  try {
+    if (!req._IS_ADMIN_ACCOUNT) {
+      throw new ApiError(403, "Unauthorized access");
+    }
 
-//     // Validate required fields
-//     const validateFields = ["id"];
-//     const response = await common.requestFieldsValidation(validateFields, postData);
+    let filter = { txType: "user_fund_withdrawal" };
 
-//     if (!response.status || !postData.id) {
-//       return res.status(400).json({
-//         status: "error",
-//         message: "Transaction ID is required",
-//       });
-//     }
+    if (postData && typeof postData.status !== "undefined") {
+      filter.status = postData.status;
+    }
 
-//     // Attempt to delete the transaction
-//     const deletedTransaction = await FundTransaction.findByIdAndDelete(postData.id);
+    const allTransactions = await FundTransaction.find(filter)
+      .populate("txUCode", "name email contactNumber username")
+      .populate("uCode", "name email contactNumber username")
+      .lean();
 
-//     if (!deletedTransaction) {
-//       return res.status(404).json({
-//         status: "error",
-//         message: "Transaction not found",
-//       });
-//     }
+    return res
+      .status(200)
+      .json(new ApiResponse(200, allTransactions, "Fetched withdrawal requests successfully"));
+  } catch (err) {
+    next(err);
+  }
+};
 
-//     // Success response
-//     return res.status(200).json({
-//       status: "success",
-//       message: "Transaction deleted successfully",
-//       data: deletedTransaction,
-//     });
-//   } catch (err) {
-//     console.error("Error deleting transaction:", err);
-//     return res.status(500).json({
-//       status: "error",
-//       message: "Server error",
-//     });
-//   }
-// };
 
-// async function handler(req, res) {
-//   const { withdrawalSlug } = req.query;
-//   let routeFlag = true;
+exports.getUserWithdrawalTransactions = async (req, res, next) => {
+  const vsuser = req.user;
+  const postData = req.body;
 
-//   if (req.method === "POST") {
-//     switch (withdrawalSlug) {
-//       case "createRequest":
-//         await routeHandler.createRequest(req, res);
-//         break;
-//       case "updateTransactions":
-//         await routeHandler.updateTransactions(req, res);
-//         break;
-//       case "getTransactions":
-//         await routeHandler.getTransactions(req, res);
-//         break;
-//       case "deleteTransaction":
-//         await routeHandler.deleteTransaction(req, res);
-//         break;
-//       default:
-//         routeFlag = false;
-//     }
-//   } else {
-//     routeFlag = false;
-//   }
+  try {
+    let filter = { txType: "user_fund_withdrawal", uCode: vsuser._id };
 
-//   if (!routeFlag) {
-//     res.status(404).send("No route found.");
-//   }
-// }
+    if (postData && Number.isInteger(postData.status)) {
+      filter.status = postData.status;
+    }
 
-// export default authMiddleware(handler);
+    const allTransactions = await FundTransaction.find(filter)
+      .populate("txUCode", "name email contactNumber username")
+      .populate("uCode", "name email contactNumber username")
+      .sort({ createdAt: -1 }) // Sort by latest transactions
+      .lean();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, allTransactions, "User withdrawal requests fetched successfully"));
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteTransaction = async (req, res, next) => {
+  const postData = req.body;
+
+  try {
+    // Check if the user is an admin
+    if (!req._IS_ADMIN_ACCOUNT) {
+      throw new ApiError(403, "Unauthorized access");
+    }
+
+    // Validate required fields
+    const validateFields = ["id"];
+    const response = await common.requestFieldsValidation(validateFields, postData);
+
+    if (!response.status) {
+      throw new ApiError(400, `Missing fields: ${response.missingFields.join(", ")}`);
+    }
+
+    // Ensure the ID is a valid ObjectId
+    if (!postData.id.match(/^[0-9a-fA-F]{24}$/)) {
+      throw new ApiError(400, "Invalid transaction ID format");
+    }
+
+    // Check if transaction exists before deleting
+    const transaction = await FundTransaction.findById(postData.id);
+    if (!transaction) {
+      throw new ApiError(404, "Transaction not found");
+    }
+
+    // Delete the transaction
+    await FundTransaction.findByIdAndDelete(postData.id);
+
+    return res.status(200).json(new ApiResponse(200, {}, "Transaction deleted successfully"));
+
+  } catch (err) {
+    next(err);
+  }
+};

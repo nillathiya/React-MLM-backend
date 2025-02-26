@@ -10,8 +10,8 @@ const incomeTransactionSchema = new Schema(
         source: { type: String },
         amount: { type: Number },
         txCharge: { type: Number },
-        postWalletBalance: { type: Number },
         currentWalletBalance: { type: Number },
+        postWalletBalance: { type: Number },
         remark: { type: String },
         response: { type: String },
         status: { type: Number, default: 0 }, // 0,1,2

@@ -11,13 +11,16 @@ const fundTransactionSchema = new Schema(
         walletType: { type: String }, // "FUND_WALLET" , "MAIN_WALLET"
         amount: { type: Number },
         txCharge: { type: Number },
+        tds: { type: Number },
+        cryptoDetails: { type: Number },
+        wPool: { type: Number },
         paymentSlip: { type: String },
         txNumber: { type: String },
-        postWalletBalance: { type: Number },
         currentWalletBalance: { type: Number },
+        postWalletBalance: { type: Number },
         method: { type: String },
         response: { type: String },
-        remark:{ type: String },
+        remark: { type: String },
         isRetrieveFund: { type: Boolean, default: false },
         status: { type: Number, default: 0 }, // 0,1,2
     },

@@ -226,34 +226,29 @@ exports.registerAdmin = async (req, res, next) => {
     }
 };
 
-// exports.getAllAdmins = async (req, res) => {
-//     try {
-//         const admins = await AdminUser.find({});
-//         return res.status(200).json({
-//             status: "success",
-//             data: admins,
-//         });
-//     } catch (error) {
-//         return res.status(500).json({
-//             status: "error",
-//             message: "Internal Server Error",
-//             error: error.message,
-//         });
-//     }
-// }
+exports.getAllAdmins = async (req, res, next) => {
+    try {
+        const admins = await AdminUser.find({});
+        return res.status(200).json(new ApiResponse(200, admins, "Get All Admins successfully"));
+    } catch (error) {
+        next(error)
+    }
+}
 
-// exports.logout = async (req, res) => {
-//     try {
-//         res.clearCookie("accessToken");
-//         return res.status(200).json({ status: "success", message: "Logged out successfully" });
-//     } catch (error) {
-//         return res.status(500).json({
-//             status: "error",
-//             message: "Internal Server Error",
-//             error: error.message,
-//         });
-//     }
-// }
+exports.logout = async (req, res, next) => {
+    try {
+        res.clearCookie("accessToken", {
+            path: "/",
+            domain: process.env.NODE_ENV === "production" ? ".yourdomain.com" : undefined,
+            sameSite: "Strict",
+            secure: process.env.NODE_ENV === "production",
+        });
+
+        return res.status(200).json(new ApiResponse(200, {}, "Logged out successfully"));
+    } catch (error) {
+        next(error);
+    }
+};
 
 // exports.changeUserPassword = async (req, res) => {
 //     const { confirmPassword, newPassword, oldPassword } = req.body;

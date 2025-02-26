@@ -1,5 +1,7 @@
 const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
+const CryptoJS = require("crypto-js");
+const envConfig = require('../config/envConfig');
 // import { REQUIRED_FIELD } from "../../../helpers/APIConstant";
 const common = require('../helpers/common');
 const { User, Transaction, FundTransaction, IncomeTransaction, WalletSettings, Wallet } = require('../models/DB');
@@ -591,6 +593,26 @@ exports.getFundTransactionsByUser = async (req, res, next) => {
         next(err);
     }
 };
+
+
+exports.getUserIncomeTransactions = async (req, res, next) => {
+    const { source } = req.query;
+    const vsuser = req.user;
+    try {
+        const filter = { uCode: vsuser?._id };
+        if (source) filter.source = source;
+
+        const incomeTransactions = await IncomeTransaction.find(filter)
+            .sort({ _id: 1 })
+            .lean();
+
+        const encryptedIncomeTransaction = CryptoJS.AES.encrypt(JSON.stringify(incomeTransactions), envConfig.CRYPTO_SECRET_KEY).toString();
+        res.status(200).json(new ApiResponse(200, encryptedIncomeTransaction, "Income transactions retrieved successfully"));
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 // routeHandler.getAllIncomeTransactions = async (req, res) => {
 //     const postData = req.body;
