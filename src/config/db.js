@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const envConfig = require("./envConfig");
+
 const connectDB = async () => {
   try {
     await mongoose.connect(envConfig.MONGO_URI);

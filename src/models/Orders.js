@@ -7,7 +7,7 @@ const ordersSchema = new Schema(
         pinId: { type: Schema.Types.ObjectId, ref: "PinDetails" },
         activeId: Number,
         txType: String,
-        bv: String,
+        bv: Number,
         pv: String,
         payOutStatus: { type: Number, default: 0 },
         amount: Number,

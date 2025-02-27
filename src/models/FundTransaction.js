@@ -21,6 +21,7 @@ const fundTransactionSchema = new Schema(
         method: { type: String },
         response: { type: String },
         remark: { type: String },
+        reason: { type: String },
         isRetrieveFund: { type: Boolean, default: false },
         status: { type: Number, default: 0 }, // 0,1,2
     },

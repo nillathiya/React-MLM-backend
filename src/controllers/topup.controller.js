@@ -94,11 +94,11 @@ exports.createTopUp = async (req, res, next) => {
     const orderPayload = {
       customerId: vsuser._id,
       pinId,
+      bv:amount,
       amount,
       txType,
       status: 1,
       activeId: lastOrder ? lastOrder.activeId + 1 : 1,
-      bv: pinDetail.bv || 0,
     };
 
     const newOrder = await new Orders(orderPayload).save();

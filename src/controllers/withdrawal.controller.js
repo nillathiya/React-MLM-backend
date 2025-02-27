@@ -134,7 +134,7 @@ exports.updateRequest = async (req, res, next) => {
 
     // Prepare the fields to update
     const set = {};
-    ["status", "response"].forEach((field) => {
+    ["status", "response", "reason"].forEach((field) => {
       if (postData[field] !== undefined && postData[field] !== "") {
         set[field] = postData[field];
       }

@@ -8,7 +8,7 @@ const verifyJwt = async (req, res, next) => {
     const token =
       req.cookies?.accessToken ||
       req.header("Authorization")?.replace("Bearer ", "");
-    console.log(token)
+    // console.log(token);
 
     if (!token) {
       throw new ApiError(401, "Unauthorized access: No token provided")
@@ -17,7 +17,7 @@ const verifyJwt = async (req, res, next) => {
     try {
       // Decode and fetch the user using the Common helper
       const user = await common.getUserByJwt(token);
-      console.log(user)
+      // console.log(user);
 
       if (!user) {
         throw new ApiError(400, "Invalid access token: User not found");

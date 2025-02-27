@@ -171,7 +171,7 @@ exports.checkUsername = async (req, res, next) => {
 //     }
 // };
 
-exports.updateUser = async (req, res,next) => {
+exports.updateUser = async (req, res, next) => {
     try {
         const { id } = req.params;
         const updatedData = req.body;
@@ -226,10 +226,13 @@ exports.updateUser = async (req, res,next) => {
             ].filter(Boolean),
         });
 
+        console.log(existingUser);
+
         if (existingUser) {
-            let message = "Mobile already exists";
+            let message = "";
             if (existingUser.email === updatedData.email) message = "Email already exists";
             if (existingUser.username === updatedData.username) message = "Username already exists";
+            if (existingUser.mobile === updatedData.mobile) message = "Mobile already exists";
 
             throw new ApiError(400, message);
         }
@@ -264,7 +267,7 @@ exports.updateUser = async (req, res,next) => {
         });
 
         // Update basic fields dynamically
-        ["username", "name", "email", "mobile", "gender", "dateOfBirth"].forEach((field) => {
+        ["username", "name", "email", "mobile", "gender", "dateOfBirth", "uSponsor"].forEach((field) => {
             if (updatedData[field] !== undefined) {
                 updateFields[field] = updatedData[field];
             }
