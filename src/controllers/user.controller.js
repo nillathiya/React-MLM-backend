@@ -7,6 +7,8 @@ const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
 const crypto = require("crypto");
 const common = require('../helpers/common');
+const team = require('../helpers/team');
+const businessUtils = require('../helpers/businessUtils');
 
 // Register a new user
 exports.registerUser = async (req, res, next) => {
@@ -56,74 +58,59 @@ exports.registerUser = async (req, res, next) => {
 
 exports.get = async (req, res, next) => {
     try {
-        const {
-            searchterm,
-            status,
-            isActive,
-            blockStatus,
-            limit = 2,
-            page = 1,
-            includeTotalMachine = "false",
-        } = req.query;
+        const users = await User.find({}).populate("uSponsor", "username name")
+            .sort({ _id: 1 })
 
-        // Validate and set pagination defaults
-        const itemsPerPage = Math.max(parseInt(limit, 10) || 2, 1);
-        const currentPage = Math.max(parseInt(page, 10) || 1, 1);
-
-        const filterConditions = {};
-
-        if (status) {
-            filterConditions.status = { $regex: status, $options: 'i' };
-        }
-        if (isActive !== undefined) {
-            filterConditions['accountStatus.isActive'] = isActive === '1' ? 'true' : 'false';
-        }
-
-        if (blockStatus !== undefined) {
-            filterConditions['accountStatus.blockStatus'] = blockStatus === '1' ? 'true' : 'false';
-        }
-
-        // Search across multiple fields
-        if (searchterm) {
-            filterConditions.$or = [
-                { name: { $regex: searchterm, $options: 'i' } },
-                { email: { $regex: searchterm, $options: 'i' } },
-                { mobile: { $regex: searchterm, $options: 'i' } },
-                { username: { $regex: searchterm, $options: 'i' } },
-            ];
-        }
-
-        // Fetch users with filters and pagination
-        const users = await User.find(filterConditions)
-            .sort({ createdAt: -1 })
-            .skip((currentPage - 1) * itemsPerPage)
-            .limit(itemsPerPage);
-
-        const totalRecords = await User.countDocuments(filterConditions);
-
-        let updatedUsers = users;
-
-        if (includeTotalMachine === 'true') {
-            const userPromises = users.map(async (user) => {
-                const { userTotalMachines } = await controllerHelper.getUserTotalMachine(user._id);
-                const userObj = user.toObject();
-                userObj.userTotalMachine = userTotalMachines;
-                return userObj;
-            });
-            updatedUsers = await Promise.all(userPromises);
-        }
-
-        res.status(200).json(new ApiResponse(200, updatedUsers, "Users fetched successfully", {
-            totalRecords,
-            totalPages: Math.ceil(totalRecords / itemsPerPage),
-            currentPage,
-            itemsPerPage,
-        }))
-
+        res.status(200).json(new ApiResponse(200, users, "Users fetched successfully"))
     } catch (error) {
         next(error);
     }
 };
+
+exports.getUserGenerationTree = async (req, res, next) => {
+    try {
+        const loggedInUser = req.user; 
+
+        if (!loggedInUser) {
+            return res.status(400).json({ message: "User not found" });
+        }
+
+        // Recursive function to get downline users
+        const getDownlineUsers = async (sponsorIds) => {
+            const users = await User.find({ uSponsor: { $in: sponsorIds } })
+                .select("username name uSponsor createdAt"); 
+
+            if (users.length === 0) return [];
+
+            const children = await getDownlineUsers(users.map(user => user._id));
+            return [...users, ...children];
+        };
+
+        // Get downline of the logged-in user
+        const downlineUsers = await getDownlineUsers([loggedInUser._id]);
+
+        // Include logged-in user at the top of the response
+        const allUsers = [
+            {
+                _id: loggedInUser._id,
+                username: loggedInUser.username,
+                name: loggedInUser.name,
+                uSponsor: loggedInUser.uSponsor || null,
+                createdAt: loggedInUser.createdAt,
+            },
+            ...downlineUsers,
+        ];
+
+        res.status(200).json({
+            status: 200,
+            data: allUsers,
+            message: "User generation hierarchy fetched successfully",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 exports.checkUsername = async (req, res, next) => {
     try {
@@ -138,6 +125,42 @@ exports.checkUsername = async (req, res, next) => {
         next(error)
     }
 };
+
+exports.getUserDirects = async (req, res, next) => {
+    const vsuser = req.user
+    try {
+        const user = await User.findById(vsuser._id);
+        if (!user) {
+            return next(new ApiError(404, "User not found"));
+        }
+
+        const users = await User.find({ uSponsor: user.uCode }).select(
+            "username name mobile accountStatus.activeStatus createdAt"
+        );
+
+        // Fetch packages asynchronously for each user
+        const directs = await Promise.all(
+            users.map(async (u) => {
+                const packageData = await businessUtils.myPackage(u._id);
+                return {
+                    _id: u._id,
+                    username: u.username,
+                    name: u.name,
+                    mobile: u.mobile,
+                    package: packageData,
+                    activeStatus: u.accountStatus?.activeStatus || 0,
+                    createdAt: u.createdAt,
+                };
+            })
+        );
+
+        res.status(200).json(new ApiResponse(200, directs, "User directs fetched successfully"));
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 
 // exports.getById = async (req, res) => {
 //     const { id } = req.params;

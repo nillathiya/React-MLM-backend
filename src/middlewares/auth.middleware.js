@@ -4,7 +4,8 @@ const { ApiResponse } = require('../utils/apiResponse');
 
 const verifyJwt = async (req, res, next) => {
   try {
-    // Retrieve the token from cookies or Authorization header
+    // console.log("Cookies Received:", req.cookies);
+    // console.log("Cookies Received:", req.cookies?.accessToken);
     const token =
       req.cookies?.accessToken ||
       req.header("Authorization")?.replace("Bearer ", "");
@@ -40,7 +41,6 @@ const verifyJwt = async (req, res, next) => {
       throw new ApiError(401, error.message || "Invalid access token");
     }
   } catch (error) {
-    console.log("error", error)
     next(error);
   }
 };

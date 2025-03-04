@@ -71,7 +71,7 @@ exports.getAllOrders = async (req, res, next) => {
     if (!req._IS_ADMIN_ACCOUNT) {
       throw new ApiError(403, "Unauthorized access")
     }
-    const orders = await Orders.find({});
+    const orders = await Orders.find({}).populate("customerId","username name");
     res.status(200).json(new ApiResponse(200, orders, "Get All orders successfully"))
   } catch (error) {
     next(error)

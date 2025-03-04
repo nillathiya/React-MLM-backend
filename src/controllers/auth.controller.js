@@ -73,19 +73,14 @@ exports.adminLogin = async (req, res, next) => {
 
         const cookieOptions = {
             httpOnly: true,
-            sameSite: "Strict",
-        };
-        if (process.env.NODE_ENV === "production") {
-            cookieOptions.secure = true;
+            sameSite: "None", // Use `None` if frontend & backend are different origins
+            secure: process.env.NODE_ENV === "production" ? true : false,// Make true if we use https
+            path: "/", 
         }
-        res
-            .status(200)
+
+        res.status(200)
             .cookie("accessToken", token, cookieOptions)
-            .json(new ApiResponse(
-                200,
-                { admin, token }, // Include token in the response data
-                "Admin logged in successfully"
-            ));
+            .json(new ApiResponse(200, { admin, token }, "You are successfully logged in"));
     } catch (error) {
         next(error);
     }
@@ -238,10 +233,15 @@ exports.getAllAdmins = async (req, res, next) => {
 exports.logout = async (req, res, next) => {
     try {
         res.clearCookie("accessToken", {
-            path: "/",
-            domain: process.env.NODE_ENV === "production" ? ".yourdomain.com" : undefined,
-            sameSite: "Strict",
-            secure: process.env.NODE_ENV === "production",
+            httpOnly: true,
+            secure: false,
+            sameSite: "None"
+            // httpOnly: true,
+            // path: "/",
+            // domain: process.env.NODE_ENV === "production" ? ".yourdomain.com" : undefined,
+            // // sameSite: "Strict",
+            // sameSite: "none",
+            // secure: process.env.NODE_ENV === "production",
         });
 
         return res.status(200).json(new ApiResponse(200, {}, "Logged out successfully"));
@@ -249,7 +249,6 @@ exports.logout = async (req, res, next) => {
         next(error);
     }
 };
-
 // exports.changeUserPassword = async (req, res) => {
 //     const { confirmPassword, newPassword, oldPassword } = req.body;
 //     const userId = req.user._id

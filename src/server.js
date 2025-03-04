@@ -1,5 +1,5 @@
 require('module-alias/register');
-require("dotenv").config({path: ".env.development.local"});
+require("dotenv").config({ path: ".env.development.local" });
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 const connectDB = require("./config/db");
 const routes = require("./routes");
 const { handleFileUploadError } = require("./utils/multer");
-const {errorMiddleware}=require('./middlewares/error.middleware');
+const { errorMiddleware } = require('./middlewares/error.middleware');
 const cors = require("cors");
 const envConfig = require("./config/envConfig");
 
@@ -21,6 +21,7 @@ const io = socketIo(server, {
             "https://admin.swisscorpminer.com",
             "http://localhost:3000",
             "http://localhost:5173",
+            "http://192.168.29.19:5173",
         ],
         methods: ["GET", "POST", "DELETE", "PUT"],
         credentials: true,
@@ -34,20 +35,19 @@ global.io = io;
 require("./sockets/socketHandlers")(io);
 
 // Middleware setup
-app.use(
-    cors({
-        origin: [
-            "https://test.swisscorpminer.com",
-            "https://admin.swisscorpminer.com",
-            "http://localhost:3000",
-            "http://localhost:5173",
-        ],
-        methods: ["GET", "POST", "DELETE", "PUT"],
-        credentials: true,
-    })
-);
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors({
+    origin: [
+        "https://test.swisscorpminer.com",
+        "https://admin.swisscorpminer.com",
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://192.168.29.19:5173"
+    ],
+    credentials: true,  // ✅ Ensures cookies are sent
+    methods: ["GET", "POST", "DELETE", "PUT"],
+}));
 
 // Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));

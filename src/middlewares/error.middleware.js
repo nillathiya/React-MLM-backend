@@ -1,7 +1,7 @@
 const { ApiError } = require("../utils/apiError");
 
 const errorMiddleware = (err, req, res, next) => {
-  console.error("Error Log:", err); // Keep for debugging
+  // console.error("Error Log:", err); // Keep for debugging
 
   // Handle Mongoose Validation Errors
   if (err.name === "ValidationError") {

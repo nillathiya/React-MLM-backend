@@ -30,4 +30,5 @@ adminUserSchema.methods.generateAccessToken = function () {
         }
     );
 };
+adminUserSchema.index({email: 1, username: 1 });
 module.exports = mongoose.model("AdminUser", adminUserSchema);
