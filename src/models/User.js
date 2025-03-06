@@ -21,9 +21,19 @@ const userSchema = new Schema(
         address: {
             line1: { type: String },
             line2: { type: String },
-            city: { type: String },
-            state: { type: String },
-            country: { type: String },
+            city: {
+                label: { type: String },
+                value: { type: String }
+            },
+            state: {
+                label: { type: String },
+                value: { type: String }
+            },
+            country: {
+                dialCode: { type: String },
+                label: { type: String },
+                value: { type: String },
+            },
             countryCode: { type: String },
             postalCode: { type: String },
         },
@@ -32,6 +42,7 @@ const userSchema = new Schema(
         accountStatus: {
             activeId: { type: Number, default: 0 },
             activeStatus: { type: Number, default: 0 },
+            blockStatus: { type: Number, default: 0 },
             activeDate: { type: Date },
         },
         role: { type: Number, default: 2 }, // 1 - Admin, 2 - User

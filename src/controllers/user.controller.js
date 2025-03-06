@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const { User, Orders } = require('../models/DB');
 const bcrypt = require('bcrypt');
 // const controllerHelper = require('../helpers/controller');
 // const UserOtpVerification = require('../models/UserOtpVerification');
@@ -6,9 +6,13 @@ const { PASSWORD_REGEX } = require('../helpers/constatnts');
 const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
 const crypto = require("crypto");
+const CryptoJS = require("crypto-js");
 const common = require('../helpers/common');
 const team = require('../helpers/team');
 const businessUtils = require('../helpers/businessUtils');
+const mongoose = require('mongoose');
+const envConfig = require('../config/envConfig');
+
 
 // Register a new user
 exports.registerUser = async (req, res, next) => {
@@ -69,7 +73,7 @@ exports.get = async (req, res, next) => {
 
 exports.getUserGenerationTree = async (req, res, next) => {
     try {
-        const loggedInUser = req.user; 
+        const loggedInUser = req.user;
 
         if (!loggedInUser) {
             return res.status(400).json({ message: "User not found" });
@@ -78,7 +82,7 @@ exports.getUserGenerationTree = async (req, res, next) => {
         // Recursive function to get downline users
         const getDownlineUsers = async (sponsorIds) => {
             const users = await User.find({ uSponsor: { $in: sponsorIds } })
-                .select("username name uSponsor createdAt"); 
+                .select("username name uSponsor createdAt");
 
             if (users.length === 0) return [];
 
@@ -101,9 +105,12 @@ exports.getUserGenerationTree = async (req, res, next) => {
             ...downlineUsers,
         ];
 
+        const encryptedAllUsers = CryptoJS.AES.encrypt(JSON.stringify(allUsers), envConfig.CRYPTO_SECRET_KEY).toString();
+
+
         res.status(200).json({
             status: 200,
-            data: allUsers,
+            data: encryptedAllUsers,
             message: "User generation hierarchy fetched successfully",
         });
     } catch (error) {
@@ -160,39 +167,32 @@ exports.getUserDirects = async (req, res, next) => {
     }
 };
 
+exports.getUserDetailsWithInvestmnetInfo = async (req, res, next) => {
+    const { userId } = req.body;
+    try {
+        if (!userId) {
+            throw new ApiError(404, "UserId not found");
+        }
+        const user = await User.findById(userId).populate("uSponsor", "username name");
 
+        const order = await Orders.aggregate([
+            { $match: { customerId: new mongoose.Types.ObjectId(userId) } },
+            { $group: { _id: null, totalAmount: { $sum: "$bv" } } }
+        ]);
 
-// exports.getById = async (req, res) => {
-//     const { id } = req.params;
+        const userDetails = {
+            user,
+            totalInvestment: order.length > 0 ? order[0].totalAmount : 0,
+        };
 
-//     try {
-//         if (!id) {
-//             return res.status(400).json({
-//                 status: "error",
-//                 message: "ID parameter is required"
-//             });
-//         }
-//         const user = await User.findById(id);
+        const encryptedUserDetails = CryptoJS.AES.encrypt(JSON.stringify(userDetails), envConfig.CRYPTO_SECRET_KEY).toString();
 
-//         if (!user) {
-//             return res.status(404).json({
-//                 status: "error",
-//                 message: "User not found"
-//             });
-//         }
-//         return res.status(200).json({
-//             status: "success",
-//             message: "User retrieved successfully",
-//             data: user
-//         });
-//     } catch (error) {
-//         return res.status(500).json({
-//             status: "error",
-//             message: "Internal server error",
-//             error: error.message
-//         });
-//     }
-// };
+        return res.status(200).json(new ApiResponse(200, encryptedUserDetails, "Get user details with investment info"));
+
+    } catch (error) {
+        next(error);
+    }
+}
 
 exports.updateUser = async (req, res, next) => {
     try {
@@ -309,6 +309,107 @@ exports.updateUser = async (req, res, next) => {
     }
 };
 
+const transformRequestBody = (body) => {
+    const transformedBody = { ...body };
+
+    // Construct address only if it contains valid data
+    const address = {};
+
+    if (body["address.line1"]) address.line1 = body["address.line1"];
+    if (body["address.line2"]) address.line2 = body["address.line2"];
+    if (body["address.countryCode"]) address.countryCode = body["address.countryCode"];
+
+    if (body["address.city"] && body["address.city"] !== "null") {
+        try {
+            address.city = JSON.parse(body["address.city"]);
+        } catch (error) {
+            address.city = body["address.city"];
+        }
+    }
+
+    if (body["address.state"] && body["address.state"] !== "null") {
+        try {
+            address.state = JSON.parse(body["address.state"]);
+        } catch (error) {
+            address.state = body["address.state"];
+        }
+    }
+
+    if (body["address.country"] && body["address.country"] !== "null") {
+        try {
+            address.country = JSON.parse(body["address.country"]);
+        } catch (error) {
+            address.country = body["address.country"];
+        }
+    }
+
+    if (Object.keys(address).length > 0) {
+        transformedBody.address = address;
+    }
+
+    // Remove old flat keys to avoid conflicts
+    delete transformedBody["address.line1"];
+    delete transformedBody["address.line2"];
+    delete transformedBody["address.countryCode"];
+    delete transformedBody["address.city"];
+    delete transformedBody["address.state"];
+    delete transformedBody["address.country"];
+
+    return transformedBody;
+};
+
+exports.updateUserProfile = async (req, res, next) => {
+    try {
+        const userId = req._IS_ADMIN_ACCOUNT ? req.body.userId : req.user?._id;
+
+        if (!userId) {
+            throw new ApiError(401, "Unauthorized. Please provide a valid user ID.");
+        }
+
+        // console.log("Raw Request Body:", req.body);
+
+        const updatedData = transformRequestBody(req.body);
+        // console.log("Transformed Data:", updatedData);
+
+        const updateFields = { ...updatedData };
+        // Handle password update
+        if (req.body.password) {
+            const salt = await bcrypt.genSalt(10);
+            updateFields.password = await bcrypt.hash(req.body.password, salt);
+        }
+
+        if (req.file) {
+            updateFields.profilePicture = `/uploads/${req.file.filename}`;
+        }
+
+        // Ensure only provided fields are updated
+        const user = await User.findByIdAndUpdate(userId, { $set: updateFields }, { new: true });
+
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
+
+        return res.status(200).json(new ApiResponse(200, user, "User profile updated"));
+
+    } catch (error) {
+        console.error("Error updating user:", error);
+        next(error);
+    }
+};
+
+
+exports.getUserById = async (req, res, next) => {
+    const { userId } = req.body;
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
+        return res.status(200).json(new ApiResponse(200, user, "Get user successfully"))
+    } catch (error) {
+        next(error);
+    }
+}
 
 // // Delete user
 // exports.deleteUser = async (req, res) => {

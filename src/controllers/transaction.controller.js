@@ -613,67 +613,41 @@ exports.getUserIncomeTransactions = async (req, res, next) => {
     }
 };
 
+exports.getAllIncomeTransactions = async (req, res,next) => {
+    const postData = req.body;
+    try {
+        if (!req._IS_ADMIN_ACCOUNT) {
+            throw new ApiError(403, "UnAuthorized access")
+        }
+        const validateFields = ["txType"];
+        const response = await common.requestFieldsValidation(
+            validateFields,
+            postData
+        );
+        if (!response.status) {
+            throw new ApiError(400, `Missing fields: ${response.missingFields.join(", ")}`)
+        }
+        const status = postData.status;
+        const txType = postData.txType;
 
-// routeHandler.getAllIncomeTransactions = async (req, res) => {
-//     const postData = req.body;
-//     const vsuser = req.vsuser;
-//     try {
-//         const validateFields = ["txType"];
-//         const response = await common.requestFieldsValidation(
-//             validateFields,
-//             postData
-//         );
-//         if (!response.status) {
-//             return res.json({
-//                 status: "error",
-//                 data: REQUIRED_FIELD,
-//             });
-//         }
-//         const status = postData.status;
-//         const txType = postData.txType;
 
-//         if (req._IS_ADMIN_ACCOUNT) {
-//             const query = {};
-//             if (status !== undefined) {
-//                 query.status = status;
-//             }
-//             if (txType !== "all") {
-//                 query.txType = txType;
-//             }
-//             const allTransactions = await IncomeTransaction.find(query)
-//                 .populate("txUCode", "name email contactNumber username")
-//                 .populate("uCode", "name email contactNumber username");
+        const query = {};
+        if (status !== undefined) {
+            query.status = status;
+        }
+        if (txType !== "all") {
+            query.txType = txType;
+        }
+        const allTransactions = await IncomeTransaction.find(query)
+            .populate("txUCode", "username name")
+            .populate("uCode", "username name");
 
-//             return res.json({
-//                 status: "success",
-//                 data: allTransactions,
-//             });
-//         } else {
-//             const query = {
-//                 uCode: vsuser._id,
-//             };
-//             if (status !== undefined) {
-//                 query.status = status;
-//             }
-//             if (txType !== "all") {
-//                 query.txType = txType;
-//             }
-//             const allTransactions = await IncomeTransaction.find(query)
-//                 .populate("txUCode", "name email contactNumber username")
-//                 .populate("uCode", "name email contactNumber username");
+        return res.status(200).json(new ApiResponse(200, allTransactions, "Get all income transactions successfully"))
 
-//             return res.json({
-//                 status: "success",
-//                 data: allTransactions,
-//             });
-//         }
-//     } catch (err) {
-//         res.json({
-//             status: "error",
-//             message: "Server error",
-//         });
-//     }
-// };
+    } catch (err) {
+        next(err);
+    }
+};
 
 // routeHandler.directFundTransfer = async (req, res) => {
 //     const vsuser = req.vsuser;
