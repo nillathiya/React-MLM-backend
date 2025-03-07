@@ -13,5 +13,6 @@ router.post("/fund/transfer", verifyJwt, transactionController.userFundTransfer)
 router.post("/fund/convert", verifyJwt, transactionController.userConvertFunds);
 router.post("/income/user", verifyJwt, transactionController.getUserIncomeTransactions);
 router.post("/income/all", verifyJwt, transactionController.getAllIncomeTransactions);
+router.post("/direct-fund-transfer", verifyJwt, transactionController.directFundTransfer);
 
 module.exports = router;

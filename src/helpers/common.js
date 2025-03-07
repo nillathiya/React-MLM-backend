@@ -79,10 +79,10 @@ common.mangeWalletAmounts = async (userId, slug, amount) => {
       slug: slug,
     });
     if (!walletSetting || !walletSetting.slug) {
-      return res.json({
+      return {
         status: 0,
-        message: "Wallet not found",
-      });
+        message: "WalletSetting not found",
+      }
     }
     const stringWalletData = JSON.stringify(walletSetting);
     const jsonWalletData = JSON.parse(stringWalletData);
@@ -146,5 +146,9 @@ common.getWalletBalance = (walletSettingTable, userWallet, walletSlug) => {
   return userWallet[walletColumn] || 0;
 };
 
+// Generate a unique slug from title
+common.generateSlug = (title) => {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+};
 
 module.exports = common;

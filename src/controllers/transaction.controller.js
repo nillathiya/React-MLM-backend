@@ -120,47 +120,35 @@ exports.createFundTransactionRequest = async (req, res, next) => {
 };
 
 exports.getAllFundTransactions = async (req, res, next) => {
-    const postData = req.body;
+    const { status, txType } = req.body;
+
     try {
-        if (req._IS_ADMIN_ACCOUNT) {
-            if (postData?.status === 1) {
-                const allTransactions = await FundTransaction.find({ status: 1 })
-                    .populate("txUCode", "name email contactNumber username")
-                    .populate("uCode", "name email contactNumber username");
-
-                return res.status(200).json(new ApiResponse(200, allTransactions, "Fund Transaction Fetches successfully"));
-
-            } else if (postData?.status === 2) {
-                const allTransactions = await FundTransaction.find({ status: 2 })
-                    .populate("txUCode", "name email contactNumber username")
-                    .populate("uCode", "name email contactNumber username");
-                return res.status(200).json(new ApiResponse(200, allTransactions, "Fund Transaction Fetches successfully"));
-
-
-            } else if (postData?.status === 0) {
-                const allTransactions = await FundTransaction.find({ status: 0 })
-                    .populate("txUCode", "name email contactNumber username")
-                    .populate("uCode", "name email contactNumber username");
-                return res.status(200).json(new ApiResponse(200, allTransactions, "Fund Transaction Fetches successfully"));
-
-
-            }
-            const allTransactions = await FundTransaction.find({})
-                .populate("txUCode", "name email contactNumber username")
-                .populate("uCode", "name email contactNumber username");
-
-            return res.status(200).json(new ApiResponse(200, allTransactions, "Fund Transaction Fetches successfully"));
-
-
-        } else {
-            throw new ApiError(400,
-                "Only admin accounts can view all fund transactions"
-            )
+        if (!req._IS_ADMIN_ACCOUNT) {
+            throw new ApiError(400, "Only admin accounts can view all fund transactions");
         }
+
+        let filter = {};
+
+        if (typeof status !== "undefined") {
+            filter.status = status;
+        }
+
+        if (txType) {
+            filter.txType = txType;
+        }
+
+        // Fetch transactions based on filters
+        const allTransactions = await FundTransaction.find(filter)
+            .populate("txUCode", "name email contactNumber username")
+            .populate("uCode", "name email contactNumber username");
+
+        return res.status(200).json(new ApiResponse(200, allTransactions, "Fund transactions fetched successfully"));
+
     } catch (err) {
-        next(err)
+        next(err);
     }
 };
+
 
 exports.verifyTransaction = async (req, res, next) => {
     const userId = req.user?._id;
@@ -416,9 +404,6 @@ exports.userConvertFunds = async (req, res, next) => {
     }
 };
 
-
-
-
 // routeHandler.updateFundTransaction = async (req, res) => {
 //     const vsuser = req.vsuser;
 //     const postData = req.body;
@@ -613,7 +598,7 @@ exports.getUserIncomeTransactions = async (req, res, next) => {
     }
 };
 
-exports.getAllIncomeTransactions = async (req, res,next) => {
+exports.getAllIncomeTransactions = async (req, res, next) => {
     const postData = req.body;
     try {
         if (!req._IS_ADMIN_ACCOUNT) {
@@ -649,92 +634,115 @@ exports.getAllIncomeTransactions = async (req, res,next) => {
     }
 };
 
-// routeHandler.directFundTransfer = async (req, res) => {
-//     const vsuser = req.vsuser;
-//     const postData = req.body;
+exports.directFundTransfer = async (req, res, next) => {
+    const vsuser = req.user;
+    const postData = req.body;
 
-//     try {
-//         // Validate required fields
-//         const requiredFields = ["userId", "amount", "debitCredit", "walletType"];
-//         const validationResponse = await common.requestFieldsValidation(requiredFields, postData);
-//         if (!validationResponse.status) {
-//             return res.status(400).json({ status: "error", message: "Required fields are missing." });
-//         }
+    try {
+        // Trim and validate input fields
+        postData.username = postData.username?.trim();
+        const requiredFields = ["username", "amount", "debitCredit", "walletType"];
+        const validationResponse = await common.requestFieldsValidation(requiredFields, postData);
 
-//         const { userId, amount, debitCredit, walletType, isRetrieveFund, txType, tsxType } = postData;
+        if (!validationResponse.status) {
+            throw new ApiError(400, `Missing fields: ${validationResponse.missingFields.join(", ")}`);
+        }
 
-//         // Validate user existence
-//         const targetUser = await Users.findById(userId);
-//         if (!targetUser) {
-//             return res.status(404).json({ status: "error", message: "User not found." });
-//         }
+        const { username, amount, debitCredit, walletType, isRetrieveFund, txType, tsxType, reason } = postData;
 
-//         // Validate admin privileges
-//         if (!req._IS_ADMIN_ACCOUNT) {
-//             return res.status(403).json({ status: "error", message: "Unauthorized action." });
-//         }
+        // Validate amount
+        if (isNaN(amount) || amount <= 0) {
+            throw new ApiError(400, "Invalid amount. It must be a positive number.");
+        }
 
-//         // Validate wallet balances if retrieving funds
-//         if (isRetrieveFund && debitCredit === "DEBIT") {
-//             const walletSettings = await WalletSettings.findOne();
-//             if (!walletSettings) {
-//                 return res.status(404).json({ status: "error", message: "Wallet settings not found." });
-//             }
 
-//             const userWallet = await Wallet.findOne({ uCode: targetUser._id });
-//             if (!userWallet) {
-//                 return res.status(404).json({ status: "error", message: "Wallet not found." });
-//             }
+        // Validate user existence
+        const targetUser = await User.findOne({ username }).lean();
+        if (!targetUser) {
+            throw new ApiError(404, "User not found.");
+        }
 
-//             const balance = await common.getWalletBalance(walletSettings, userWallet, walletType);
-//             if (balance < amount) {
-//                 return res.status(400).json({ status: "error", message: "Insufficient balance." });
-//             }
-//         }
+        const userId = targetUser._id;
 
-//         // Create transaction payload
-//         const lastTransaction = await FundTransaction.findOne({ uCode: vsuser._id, txType }).sort({ createdAt: -1 });
-//         const lastBalance = lastTransaction?.currentWalletBalance || 0;
-//         const transactionPayload = {
-//             txUCode: userId,
-//             uCode: vsuser._id,
-//             txType: txType || "direct_fund_transfer",
-//             debitCredit,
-//             walletType,
-//             amount,
-//             method: "ONLINE",
-//             state: 1,
-//             isRetrieveFund: isRetrieveFund || false,
-//             tsxType,
-//             postWalletBalance: lastBalance,
-//             currentWalletBalance: debitCredit === "DEBIT" ? lastBalance - amount : lastBalance + amount,
-//         };
+        // Validate admin privileges
+        if (!req._IS_ADMIN_ACCOUNT) {
+            throw new ApiError(403, "Unauthorized action.");
+        }
 
-//         // Save the transaction
-//         const newTransaction = await new FundTransaction(transactionPayload).save();
+        let balance = 0;
+        let lastBalance = 0;
 
-//         if (!newTransaction) {
-//             return res.status(500).json({ status: "error", message: "Failed to create transaction." });
-//         }
+        // Fetch user wallet once
 
-//         // Adjust wallet balance
-//         const transferAmount = debitCredit === "DEBIT" ? -amount : amount;
-//         const walletAdjustment = await common.mangeWalletAmounts(userId, walletType, transferAmount);
-//         if (!walletAdjustment.status) {
-//             return res.status(500).json({ status: "error", message: "Wallet adjustment failed." });
-//         }
+        const userWallet = await Wallet.findOne({ uCode: userId }).lean();
+        if (!userWallet) {
+            throw new ApiError(404, "User wallet not found.");
+        }
 
-//         // Success response
-//         return res.status(201).json({
-//             status: "success",
-//             message: "Transaction created successfully.",
-//             data: newTransaction,
-//         });
-//     } catch (err) {
-//         console.error("Direct Fund Transfer Error:", err);
-//         return res.status(500).json({ status: "error", message: "Server error." });
-//     }
-// };
+        const walletSettings = await WalletSettings.find({});
+        if (!walletSettings) {
+            throw new ApiError(404, "Wallet settings not found.");
+        }
+        // Validate balance if retrieving funds
+        if (isRetrieveFund && debitCredit === "DEBIT") {
+
+
+            balance = await common.getWalletBalance(walletSettings, userWallet, walletType);
+            if (balance < amount) {
+                throw new ApiError(400, "Insufficient balance.");
+            }
+        } else {
+            balance = await common.getWalletBalance(walletSettings, userWallet, walletType);
+        }
+
+        lastBalance = balance;
+
+
+        console.log("vsuser", vsuser)
+        // Create transaction payload
+        const transactionPayload = {
+            txUCode: userId,
+            uCode: vsuser._id,
+            txType: txType || "direct_fund_transfer",
+            debitCredit,
+            walletType,
+            amount,
+            method: "ONLINE",
+            state: 1,
+            isRetrieveFund: isRetrieveFund || false,
+            reason,
+            tsxType,
+            currentWalletBalance: lastBalance,
+            postWalletBalance: debitCredit === "DEBIT" ? lastBalance - amount : lastBalance + amount,
+        };
+
+
+        // Save the transaction
+        const newTransaction = await new FundTransaction(transactionPayload).save();
+        if (!newTransaction) {
+            throw new ApiError(400, "Failed to create transaction.");
+        }
+
+        // Adjust wallet balance
+        const transferAmount = debitCredit === "DEBIT" ? -amount : amount;
+        const walletAdjustment = await common.mangeWalletAmounts(userId, walletType, transferAmount);
+        console.log("walletAdjustment", walletAdjustment)
+        if (!walletAdjustment.status) {
+            throw new ApiError(500, walletAdjustment.message || "Wallet adjustment failed.");
+        }
+
+        // Populate transaction with username
+        const populatedTransaction = await FundTransaction.findById(newTransaction._id)
+            .populate("uCode", "username name")
+            .populate("txUCode", "username name")
+            .lean();
+        return res.status(200).json(new ApiResponse(200, populatedTransaction, "Fund Transfer Successful"));
+
+    } catch (err) {
+        next(err);
+    }
+};
+
 
 // routeHandler.getUserWalletBalance = async (req, res) => {
 //     const vsuser = req.vsuser;

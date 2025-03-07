@@ -6,70 +6,68 @@ const { ApiResponse } = require('../utils/apiResponse');
 const { ApiError } = require('../utils/apiError');
 const mongoose = require('mongoose');
 
-
+// Create new rank setting (column)
 exports.createRankSetting = async (req, res, next) => {
-    const postData = req.body;
-    try {
+    const { title, value } = req.body;
 
+    try {
         if (!req._IS_ADMIN_ACCOUNT) {
             throw new ApiError(403, "Unauthorized access");
         }
-        // Required Fields Validation
-        const validateFields = ["title", "slug", "value", "status"];
-        const response = await common.requestFieldsValidation(validateFields, postData);
 
-        if (!response.status) {
-            throw new ApiError(400, `Missing fields: ${response.missingFields.join(", ")}`);
+        // Required Fields Validation
+        const validateFields = ["title", "value"];
+        const response = await common.requestFieldsValidation(validateFields, { title, value });
+
+        if (!response?.status) {
+            throw new ApiError(400, `Missing fields: ${response?.missingFields?.join(", ")}`);
         }
 
-        // Prepare Data for Saving
-        const newSettings = new RankSettings({
-            title: postData.title,
-            slug: postData.slug,
-            type: postData.type || "",
-            value: Array.isArray(postData.value) ? postData.value : [postData.value],
-            status: postData.status ?? 1,
-        });
+        // Ensure title exists before generating slug
+        if (!title || typeof title !== "string") {
+            throw new ApiError(400, "Title is required and must be a string");
+        }
 
-        await newSettings.save();
+        const slug = common.generateSlug(title);
 
-        return res.status(201).json(new ApiResponse(201, newSettings, "Rank setting created successfully"));
+        const newSetting = new RankSettings({ title, slug, value });
+        await newSetting.save();
+
+        return res.status(201).json(new ApiResponse(201, newSetting, "Rank setting created successfully"));
     } catch (error) {
         next(error);
     }
 };
 
+
 exports.updateRankSetting = async (req, res, next) => {
     try {
-        const updateData = req.body;
+        const updatedData = req.body;
 
         if (!req._IS_ADMIN_ACCOUNT) {
             throw new ApiError(403, "Unauthorized access");
         }
 
         // Required Fields Validation
-        if (!updateData.id) {
-            throw new ApiError(400, "Missing field: id");
+        const validateFields = ["title", "value",];
+        const response = await common.requestFieldsValidation(validateFields, updatedData);
+
+        if (!response.status) {
+            throw new ApiError(400, `Missing fields: ${response.missingFields.join(", ")}`);
         }
 
-        const updateFields = {};
-        if (updateData.slug) updateFields.slug = updateData.slug;
-        if (updateData.title) updateFields.title = updateData.title;
-        if (updateData.type) updateFields.type = updateData.type;
-        if (updateData.value) updateFields.value = Array.isArray(updateData.value) ? updateData.value : [updateData.value];
-        if (updateData.status !== undefined) updateFields.status = updateData.status;
+        if (updatedData.title) {
+            updatedData.slug = common.generateSlug(updatedData.title);
+        }
 
-        const updatedRankSetting = await RankSettings.findByIdAndUpdate(
-            updateData.id,
-            updateFields,
-            { new: true }
-        );
+        const updatedSetting = await RankSettings.findByIdAndUpdate(req.params.id, updatedData, { new: true });
 
-        if (!updatedRankSetting) {
+
+        if (!updatedSetting) {
             throw new ApiError(404, "Rank setting not found");
         }
 
-        return res.status(200).json(new ApiResponse(200, updatedRankSetting, "Rank setting updated successfully"));
+        return res.status(200).json(new ApiResponse(200, updatedSetting, "Rank setting updated successfully"));
     } catch (error) {
         next(error);
     }
@@ -92,6 +90,91 @@ exports.getRankSettings = async (req, res, next) => {
     }
 };
 
+// Delete rank setting (column)
+exports.deleteRankSetting = async (req, res, next) => {
+    try {
+        const setting = await RankSettings.findByIdAndDelete(req.params.id);
+        if (!setting) {
+            throw new ApiError(404, "Rank setting not found");
+        }
+        return res.status(200).json(
+            new ApiResponse(200, {}, 'Rank setting deleted')
+        );
+    } catch (error) {
+        next(error)
+    }
+};
+
+exports.deleteRow = async (req, res, next) => {
+    try {
+        const { rowIndex } = req.body;
+
+        if (typeof rowIndex !== "number" || rowIndex < 0) {
+            throw new ApiError(400, "Invalid row index");
+        }
+
+        // Find all RankSettings documents
+        const settings = await RankSettings.find();
+        if (!settings.length) {
+            throw new ApiError(404, "No settings found");
+        }
+
+        // Remove the value at the given index for all settings
+        settings.forEach((setting) => {
+            if (Array.isArray(setting.value) && rowIndex < setting.value.length) {
+                setting.value.splice(rowIndex, 1);
+            }
+        });
+
+        // Save all updated documents
+        await Promise.all(
+            settings.map(async (setting) => {
+                try {
+                    await setting.save();
+                } catch (error) {
+                    throw new ApiError(500, 'Error saving changes');
+                }
+            })
+        );
+
+        return res.status(200).json(new ApiResponse(200, settings, "Row deleted successfully from all settings"));
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.saveRow = async (req, res, next) => {
+    try {
+        const { rowIndex, rowData } = req.body;
+
+        if (typeof rowIndex !== 'number' || rowIndex < 0) {
+            throw new ApiError(400, 'Invalid row index');
+        }
+
+        const settings = await RankSettings.find();
+        if (!settings.length) {
+            throw new ApiError(404, 'No settings found');
+        }
+
+        settings.forEach((setting) => {
+            rowData.forEach(({ slug, value }) => {
+                if (setting.slug === slug) {
+                    while (setting.value.length <= rowIndex) {
+                        setting.value.push('');
+                    }
+                    setting.value[rowIndex] = value;
+                }
+            });
+        });
+
+
+        await Promise.all(settings.map((setting) => setting.save()));
+
+        return res.status(200).json(new ApiResponse(200, settings, 'Row updated successfully'));
+    } catch (error) {
+        next(error);
+    }
+};
 
 exports.getUserRankAndTeamMetrics = async (req, res, next) => {
     const vsuser = req.user;
@@ -113,7 +196,7 @@ exports.getUserRankAndTeamMetrics = async (req, res, next) => {
         const topLegs = await businessUtils.getTopLegs(userId);
         const totalTeamBusiness = topLegs.reduce((sum, b) => sum + b, 0); //total-team-business
 
-        const rankData={
+        const rankData = {
             rank: "Royalty",
             selfBusiness: selfPackage,
             directTeam: myDirectTeam,
