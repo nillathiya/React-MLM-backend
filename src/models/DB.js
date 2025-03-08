@@ -13,6 +13,7 @@ const PinDetail = require('./PinDetail');
 const AdminSettings = require('./AdminSettings');
 const RankSettings = require('./RankSettings');
 const Plan=require('./Plan');
+const NewsEvent=require('./NewsEvent');
 
 db.User = User;
 db.Ticket = Ticket;
@@ -27,6 +28,7 @@ db.PinDetail = PinDetail;
 db.AdminSettings = AdminSettings;
 db.RankSettings = RankSettings;
 db.Plan=Plan;
+db.NewsEvent=NewsEvent;
 
 // For the first time when tables are empty
 for (let collectionname in db) {
