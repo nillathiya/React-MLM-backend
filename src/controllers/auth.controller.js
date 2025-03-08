@@ -2,13 +2,14 @@ const common = require('../helpers/common');
 const bcrypt = require('bcrypt');
 const { AdminUser, User } = require('../models/DB');
 // const FrenchiseUser = require('../models/FrenchiseUser');
-// const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 // const MessageService = require('../services/message-service');
 // const UserOtpVerification = require('../models/UserOtpVerification');
 // const controllerHelper = require('../helpers/controller');
 const { PASSWORD_REGEX, ERROR_MESSAGES } = require('../helpers/constatnts');
 const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
+const envConfig = require('../config/envConfig');
 // const mongoose = require('mongoose');
 
 exports.userLogin = async (req, res, next) => {
@@ -43,7 +44,6 @@ exports.userLogin = async (req, res, next) => {
     }
 };
 
-
 exports.adminLogin = async (req, res, next) => {
     const { username, password } = req.body;
 
@@ -75,7 +75,7 @@ exports.adminLogin = async (req, res, next) => {
             httpOnly: true,
             sameSite: "None", // Use `None` if frontend & backend are different origins
             secure: process.env.NODE_ENV === "production" ? true : false,// Make true if we use https
-            path: "/", 
+            path: "/",
         }
 
         res.status(200)
@@ -249,164 +249,143 @@ exports.logout = async (req, res, next) => {
         next(error);
     }
 };
-// exports.changeUserPassword = async (req, res) => {
-//     const { confirmPassword, newPassword, oldPassword } = req.body;
-//     const userId = req.user._id
 
-//     try {
+exports.changePassword = async (req, res, next) => {
+    try {
+        const { confirmPassword, newPassword, oldPassword } = req.body;
+        const userId = req.user?._id;
 
-//         // Validate required fields
-//         const requiredFields = ["confirmPassword", "newPassword", "oldPassword"];
-//         const validationResult = await common.requestFieldsValidation(requiredFields, req.body);
+        if (!req.user) {
+            throw new ApiError(403, "Unauthorized Access");
+        }
 
-//         if (!validationResult.status) {
-//             return res.status(400).json({
-//                 status: "error",
-//                 message: `Missing fields: ${validationResult.missingFields.join(", ")}`,
-//             });
-//         }
+        // Validate required fields
+        const requiredFields = ["confirmPassword", "newPassword", "oldPassword"];
+        const validationResult = await common.requestFieldsValidation(requiredFields, req.body);
 
-//         if (!PASSWORD_REGEX.test(newPassword)) {
-//             return res.status(400).json({
-//                 status: "error",
-//                 message: ERROR_MESSAGES.INVALID_PASSWORD,
-//             });
-//         }
+        if (!validationResult.status) {
+            throw new ApiError(400, `Missing fields: ${validationResult.missingFields.join(", ")}`)
+        }
 
 
-//         // Fetch the user based on role
-//         let user;
-//         if ([1, 3, 4].includes(req.user.role)) {
-//             user = await AdminUser.findById(userId);
-//         } else if (req.user.role === 2) {
-//             user = await FrenchiseUser.findById(userId);
-//         } else {
-//             user = await User.findById(userId);
-//         }
 
-//         if (!user) {
-//             return res.status(404).json({ status: "error", message: "User not found" });
-//         }
+        // Fetch the user based on role
+        let user;
+        if ([1, 3, 4].includes(req.user.role)) {
+            user = await AdminUser.findById(userId);
+        } else if (req.user.role === 2) {
+            user = await User.findById(userId);
+        }
 
-//         // Validate old password
-//         const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
-//         if (!isOldPasswordValid) {
-//             return res.status(400).json({ status: "error", message: "Invalid old password" });
-//         }
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
 
-//         // Validate confirm password matches new password
-//         if (confirmPassword !== newPassword) {
-//             return res.status(400).json({ status: "error", message: "Confirm password does not match new password" });
-//         }
+        // Validate old password
+        const isOldPasswordValid = await bcrypt.compare(oldPassword.trim(), user.password);
+        if (!isOldPasswordValid) {
+            throw new ApiError(400, "Invalid old password");
+        }
 
-//         // Hash the new password
-//         const hashedPassword = await bcrypt.hash(newPassword, 10);
+        if (!PASSWORD_REGEX.test(newPassword)) {
+            throw new ApiError(400, ERROR_MESSAGES.INVALID_PASSWORD);
+        }
 
-//         // Update the user's password
-//         user.password = hashedPassword;
-//         await user.save();
+        // Validate confirm password matches new password
+        if (confirmPassword.trim() !== newPassword.trim()) {
+            throw new ApiError(400, "Confirm password does not match new password");
+        }
+        // Hash the new password
+        user.password = await bcrypt.hash(newPassword, 10);
+        await user.save();
 
-//         return res.status(200).json({ status: "success", message: "Password changed successfully" });
-//     } catch (error) {
-//         return res.status(500).json({
-//             status: "error",
-//             message: "Internal Server Error",
-//             error: error.message,
-//         });
-//     }
-// };
+        return res.status(200).json(new ApiResponse(200, {}, "Password changed successfully"));
+    } catch (error) {
+        next(error);
+    }
+};
 
 
-// exports.impersonation = async (req, res) => {
-//     const { userId } = req.body;
+exports.impersonation = async (req, res, next) => {
+    const { userId } = req.body;
 
-//     console.log("req user", req.user);
-//     // Verify if the requester is an admin
-//     if (!req.user || !req._IS_ADMIN_ACCOUNT) {
-//         return res.status(403).json({ status: "error", message: 'Unauthorized' });
-//     }
+    try {
+        if (!req.user || !req._IS_ADMIN_ACCOUNT) {
+            throw new ApiError(403, 'Unauthorized Access');
+        }
+        // Find the user to impersonate
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new ApiError(403, 'User not found');
+        }
 
-//     try {
-//         // Find the user to impersonate
-//         const user = await User.findById(userId);
-//         if (!user) {
-//             return res.status(404).json({ status: "error", message: 'User not found' });
-//         }
+        // Generate a JWT token for the user
+        const token = jwt.sign(
+            {
+                _id: user._id, impersonated: true,
+                parentId: user.parentId,
+                email: user.email,
+                username: user.username,
+                matrixDetails: user.matrixDetails,
+            },
+            envConfig.ACCESS_TOKEN_SECRET,
+            { expiresIn: '1h' }
+        );
 
-//         // Generate a JWT token for the user
-//         const token = jwt.sign(
-//             { _id: user._id, impersonated: true },
-//             process.env.ACCESS_TOKEN_SECRET,
-//             { expiresIn: '1h' }
-//         );
+        return res.status(200).json(new ApiResponse(200, token, "Successfully created token"))
+    } catch (error) {
+        next(error)
+    }
+}
 
-//         res.json({ status: "success", message: "Successfully created token", token });
-//     } catch (error) {
-//         res.status(500).json({ status: "error", message: 'Error impersonating user', error: error.message });
-//     }
-// }
+exports.checkUserToken = async (req, res) => {
+    const { token } = req.body;
 
-// exports.checkUserToken = async (req, res) => {
-//     const { token } = req.body;
+    try {
+        // Validate token presence
+        if (!token) {
+            throw new ApiError(403, "Token is required");
+        }
 
-//     try {
-//         // Validate token presence
-//         if (!token) {
-//             return res.status(400).json({ status: "error", message: "Token is required" });
-//         }
+        // Verify the token
+        let decodedToken;
+        try {
+            decodedToken = jwt.verify(token, envConfig.ACCESS_TOKEN_SECRET);
 
-//         // Verify the token
-//         let decodedToken;
-//         try {
-//             decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            // Ensure the user is an administrator
+            if (!decodedToken?.impersonated) {
+                throw new ApiError(403, "You must be an administrator");
+            }
+        } catch (err) {
+            throw new ApiError(403, "Invalid or expired token");
+        }
 
-//             // Ensure the user is an administrator
-//             if (!decodedToken?.impersonated) {
-//                 return res.status(403).json({ status: "error", message: "You must be an administrator" });
-//             }
-//         } catch (err) {
-//             return res.status(401).json({ status: "error", message: "Invalid or expired token" });
-//         }
+        // Fetch the user from the database
+        const user = await User.findById(decodedToken._id).select("-password");
+        if (!user) {
+            throw new ApiError(403, "User not found");
+        }
 
-//         // Fetch the user from the database
-//         const user = await User.findById(decodedToken._id).select("-password");
-//         if (!user) {
-//             return res.status(404).json({ status: "error", message: "User not found" });
-//         }
+        // Define secure cookie options
+        const cookieOptions = {
+            httpOnly: true,
+            sameSite: "Strict", // Prevent CSRF attacks
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 3600000, // 1 hour in milliseconds
+        };
 
-//         // Define secure cookie options
-//         const cookieOptions = {
-//             httpOnly: true,
-//             sameSite: "Strict", // Prevent CSRF attacks
-//             secure: process.env.NODE_ENV === "production", // Secure cookies in production
-//             maxAge: 3600000, // 1 hour in milliseconds
-//         };
+        res.status(200)
+            .cookie("accessToken", token, cookieOptions)
+            .json(new ApiResponse(200, { user, token }, "You are successfully logged in"));
 
-//         // Respond with success and set the token as a cookie
-//         res
-//             .status(200)
-//             .cookie("accessToken", token, cookieOptions)
-//             .json({
-//                 status: "success",
-//                 message: "You are successfully logged in.",
-//                 token,
-//                 data: {
-//                     _id: user._id,
-//                     usernam: user.username,
-//                     email: user.email,
-//                     name: user.name,
-
-//                 }
-//             });
-
-//     } catch (error) {
-//         return res.status(500).json({
-//             status: "error",
-//             message: "Internal Server Error",
-//             error: error.message,
-//         });
-//     }
-// };
+    } catch (error) {
+        return res.status(500).json({
+            status: "error",
+            message: "Internal Server Error",
+            error: error.message,
+        });
+    }
+};
 
 // exports.userForgotPassword = async (req, res) => {
 //     const { countryCode, mobile, username } = req.body;
