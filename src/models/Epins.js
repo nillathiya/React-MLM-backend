@@ -1,6 +1,7 @@
-import mongoose, { Schema, model } from "mongoose";
+const mongoose = require('mongoose');
+const { Schema, model } = mongoose;
 
-const EpinsSchema = new mongoose.Schema({
+const EpinsSchema = new Schema({
   txUCode: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   uCode: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   pinId: { type: mongoose.Schema.Types.ObjectId, ref: "PinDetails" },
@@ -13,6 +14,4 @@ const EpinsSchema = new mongoose.Schema({
   retrieveStatus: { type: Number, default: 0 },
 }, { timestamps: true });
 
-let tName = `Epins`;
-const EpinsModel = mongoose.models[tName] || model(tName, EpinsSchema);
-export default EpinsModel;
+module.exports = mongoose.model("Epins", EpinsSchema);

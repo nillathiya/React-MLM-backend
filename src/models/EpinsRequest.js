@@ -1,6 +1,6 @@
-import mongoose, { Schema, model } from "mongoose";
-
-const EpinsRequestSchema = new mongoose.Schema(
+const mongoose = require('mongoose');
+const { Schema, model } = mongoose;
+const EpinsRequestSchema = new Schema(
   {
     uCode: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     utrNumber: { type: String },
@@ -13,8 +13,4 @@ const EpinsRequestSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-let tName = `EpinsRequest`;
-const EpinsRequestModel =
-  mongoose.models[tName] || model(tName, EpinsRequestSchema);
-export default EpinsRequestModel;
+module.exports = mongoose.model("EpinsRequest", EpinsRequestSchema);
