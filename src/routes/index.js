@@ -14,6 +14,8 @@ const adminSettingsRoutes = require('./adminSettings.route.js');
 const rankSettingsRoutes = require('./rankSettings.route.js');
 const newsEventRoutes = require('./newsEvent.route.js');
 const contactUsRoutes = require('./contactUs.route.js');
+const companyInfoRoutes = require('./companyInfo.route.js'
+);
 
 router.use("/api/tickets", ticketRoutes);
 router.use("/api/user", userRoutes);
@@ -29,6 +31,7 @@ router.use("/api/admin-settings", adminSettingsRoutes);
 router.use("/api/rank-settings", rankSettingsRoutes);
 router.use("/api/news-events", newsEventRoutes);
 router.use("/api/contact-us", contactUsRoutes);
+router.use("/api/company-info", companyInfoRoutes);
 
 module.exports = router;
 

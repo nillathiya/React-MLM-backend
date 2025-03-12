@@ -72,11 +72,15 @@ exports.get = async (req, res, next) => {
 };
 
 exports.getUserGenerationTree = async (req, res, next) => {
+    const { userId } = req.body
     try {
-        const loggedInUser = req.user;
 
-        if (!loggedInUser) {
-            return res.status(400).json({ message: "User not found" });
+        if (!userId) {
+            throw new ApiError("userId Not Found");
+        }
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new ApiError("User Not Found");
         }
 
         // Recursive function to get downline users
@@ -91,16 +95,16 @@ exports.getUserGenerationTree = async (req, res, next) => {
         };
 
         // Get downline of the logged-in user
-        const downlineUsers = await getDownlineUsers([loggedInUser._id]);
+        const downlineUsers = await getDownlineUsers([userId]);
 
         // Include logged-in user at the top of the response
         const allUsers = [
             {
-                _id: loggedInUser._id,
-                username: loggedInUser.username,
-                name: loggedInUser.name,
-                uSponsor: loggedInUser.uSponsor || null,
-                createdAt: loggedInUser.createdAt,
+                _id: user._id,
+                username: user.username,
+                name: user.name,
+                uSponsor: user.uSponsor || null,
+                createdAt: user.createdAt,
             },
             ...downlineUsers,
         ];
@@ -141,7 +145,7 @@ exports.getUserDirects = async (req, res, next) => {
             return next(new ApiError(404, "User not found"));
         }
 
-        const users = await User.find({ uSponsor: user.uCode }).select(
+        const users = await User.find({ uSponsor: user._id }).select(
             "username name mobile accountStatus.activeStatus createdAt"
         );
 
@@ -376,6 +380,13 @@ exports.updateUserProfile = async (req, res, next) => {
         if (req.body.password) {
             const salt = await bcrypt.genSalt(10);
             updateFields.password = await bcrypt.hash(req.body.password, salt);
+        }
+        // Ensure rank is only updated if it's different
+        if (req.body.rank !== undefined) {
+            const newRank = Number(req.body.rank);
+            if (req.user.myRank !== newRank) {
+                updateFields.myRank = newRank;
+            }
         }
 
         if (req.file) {

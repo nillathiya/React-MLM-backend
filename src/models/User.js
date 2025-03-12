@@ -113,7 +113,7 @@ const userSchema = new Schema(
         // Matrix / Multi-Level Marketing Data
         position: { type: Number, default: 0 },
         accessLevel: [Number], // e.g., [0 - FE, 1 - OTO1, 2 - OTO2, etc.]
-        myRank: { type: String },
+        myRank: { type: Number },
     },
     {
         timestamps: true,

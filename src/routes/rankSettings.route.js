@@ -12,3 +12,4 @@ router.post("/get", verifyJwt, rankSettingsController.getRankSettings);
 router.post("/user", verifyJwt, rankSettingsController.getUserRankAndTeamMetrics);
 
 module.exports = router;
+

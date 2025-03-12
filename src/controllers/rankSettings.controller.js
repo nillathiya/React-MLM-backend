@@ -197,7 +197,7 @@ exports.getUserRankAndTeamMetrics = async (req, res, next) => {
         const totalTeamBusiness = topLegs.reduce((sum, b) => sum + b, 0); //total-team-business
 
         const rankData = {
-            rank: "Royalty",
+            rank: user.myRank || 0,
             selfBusiness: selfPackage,
             directTeam: myDirectTeam,
             directBusiness: directBusiness,
