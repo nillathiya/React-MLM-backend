@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { AdminUser, User, WalletSettings, Wallet } = require('../models/DB');
+const { AdminUser, User, WalletSettings, Wallet, CompanyInfo } = require('../models/DB');
 
 const common = {};
 
@@ -150,5 +150,10 @@ common.getWalletBalance = (walletSettingTable, userWallet, walletSlug) => {
 common.generateSlug = (title) => {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '_');
 };
+
+common.companyInfo = async (label) => {
+  const cDetails = await CompanyInfo.findOne({ label });
+  return cDetails?.value;
+}
 
 module.exports = common;

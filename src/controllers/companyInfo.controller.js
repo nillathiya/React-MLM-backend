@@ -33,7 +33,11 @@ exports.create = async (req, res, next) => {
 
 exports.getAllCompanyInfo = async (req, res, next) => {
     try {
-        const data = await CompanyInfo.find({});
+        if (req._IS_ADMIN_ACCOUNT) {
+            const data = await CompanyInfo.find({});
+            return res.status(200).json(new ApiResponse(200, data, "Get All Company info successfully"));
+        }
+        const data = await CompanyInfo.find({ status: 1 });
         return res.status(200).json(new ApiResponse(200, data, "Get All Company info successfully"));
     } catch (error) {
         next(error)
@@ -41,7 +45,7 @@ exports.getAllCompanyInfo = async (req, res, next) => {
 }
 exports.updateCompanyInfo = async (req, res, next) => {
     const { id } = req.params;
-    const { value, title, label } = req.body;
+    const { value, title, label,status } = req.body;
     const file = req.file;
 
     // console.log("id:", id);
@@ -64,6 +68,9 @@ exports.updateCompanyInfo = async (req, res, next) => {
             updateData.title = title;
         } if (label) {
             updateData.label = label;
+        }
+        if(status){
+            updateData.status=status;
         }
         const updatedInfo = await CompanyInfo.findByIdAndUpdate(
             id,

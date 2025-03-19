@@ -16,6 +16,7 @@ const Plan=require('./Plan');
 const NewsEvent=require('./NewsEvent');
 const ContactUs=require('./ContactUs');
 const CompanyInfo=require('./CompanyInfo');
+const UserSettings=require('./UserSettings');
 
 db.User = User;
 db.Ticket = Ticket;
@@ -33,6 +34,7 @@ db.Plan=Plan;
 db.NewsEvent=NewsEvent;
 db.ContactUs=ContactUs;
 db.CompanyInfo=CompanyInfo;
+db.UserSettings=UserSettings;
 
 // For the first time when tables are empty
 for (let collectionname in db) {

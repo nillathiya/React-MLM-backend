@@ -156,7 +156,15 @@ exports.verifyTransaction = async (req, res, next) => {
         const { txHash, amount, userAddress } = req.body;
 
         // Verify transaction
-        const status = await transactionHelper.verify(txHash, amount, userAddress);
+        const result = await transactionHelper.verify(txHash, amount, userAddress);
+        let status = result.status === "true" ? 1 : 0;
+        if (status) {
+            const receiver = result.details.to;
+            const companyBscAddress = await common.companyInfo('company_bsc_address');
+            if (receiver !== companyBscAddress) {
+                status = 0;
+            }
+        }
 
         // Insert transaction record in MongoDB
         const transaction = new Transaction({
