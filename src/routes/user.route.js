@@ -5,7 +5,7 @@ const {verifyJwt}=require('../middlewares/auth.middleware.js');
 const {upload}=require('../utils/multer.js');
 
 router.post("/create", userController.registerUser);
-router.post("/get-all", userController.get);
+router.post("/get-all", verifyJwt,userController.get);
 router.post("/check-name", userController.checkUsername);
 // router.post("/update/:id", userController.updateUser);
 router.post("/get-directs",verifyJwt, userController.getUserDirects);

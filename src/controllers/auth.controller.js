@@ -11,6 +11,7 @@ const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
 const envConfig = require('../config/envConfig');
 // const mongoose = require('mongoose');
+const { userCookieOptions, adminCookieOptions } = require('../config/cookieOptions');
 
 exports.userLogin = async (req, res, next) => {
     const { wallet } = req.body;
@@ -30,14 +31,8 @@ exports.userLogin = async (req, res, next) => {
         // Generate access token
         const token = await user.generateAccessToken();
 
-        const cookieOptions = {
-            httpOnly: true,
-            sameSite: "Strict",
-            secure: process.env.NODE_ENV === "production",
-        };
-
         res.status(200)
-            .cookie("accessToken", token, cookieOptions)
+            .cookie(`userToken_${user._id}`, token, userCookieOptions)
             .json(new ApiResponse(200, { user, token }, "You are successfully logged in"));
     } catch (error) {
         next(error);
@@ -71,15 +66,8 @@ exports.adminLogin = async (req, res, next) => {
         // Generate access token
         const token = await admin.generateAccessToken();
 
-        const cookieOptions = {
-            httpOnly: true,
-            sameSite: "None", // Use `None` if frontend & backend are different origins
-            secure: process.env.NODE_ENV === "production" ? true : false,// Make true if we use https
-            path: "/",
-        }
-
         res.status(200)
-            .cookie("accessToken", token, cookieOptions)
+            .cookie("adminToken", token, adminCookieOptions)
             .json(new ApiResponse(200, { admin, token }, "You are successfully logged in"));
     } catch (error) {
         next(error);
@@ -230,21 +218,24 @@ exports.getAllAdmins = async (req, res, next) => {
     }
 }
 
-exports.logout = async (req, res, next) => {
+exports.userLogout = async (req, res, next) => {
     try {
-        res.clearCookie("accessToken", {
-            httpOnly: true,
-            secure: false,
-            sameSite: "None"
-            // httpOnly: true,
-            // path: "/",
-            // domain: process.env.NODE_ENV === "production" ? ".yourdomain.com" : undefined,
-            // // sameSite: "Strict",
-            // sameSite: "none",
-            // secure: process.env.NODE_ENV === "production",
+        res.clearCookie("userToken", { ...userCookieOptions, expires: new Date(0) });
+
+        return res.status(200).json(new ApiResponse(200, {}, "User Logged out successfully"));
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.adminLogout = async (req, res, next) => {
+    try {
+        res.clearCookie("adminToken", {
+            ...adminCookieOptions,
+            expires: new Date(0),
         });
 
-        return res.status(200).json(new ApiResponse(200, {}, "Logged out successfully"));
+        return res.status(200).json(new ApiResponse(200, {}, "Admin Logged out successfully"));
     } catch (error) {
         next(error);
     }
@@ -366,16 +357,8 @@ exports.checkUserToken = async (req, res) => {
             throw new ApiError(403, "User not found");
         }
 
-        // Define secure cookie options
-        const cookieOptions = {
-            httpOnly: true,
-            sameSite: "Strict", // Prevent CSRF attacks
-            secure: process.env.NODE_ENV === "production",
-            maxAge: 3600000, // 1 hour in milliseconds
-        };
-
         res.status(200)
-            .cookie("accessToken", token, cookieOptions)
+            .cookie(`userToken_${user._id}`, token, userCookieOptions)
             .json(new ApiResponse(200, { user, token }, "You are successfully logged in"));
 
     } catch (error) {
