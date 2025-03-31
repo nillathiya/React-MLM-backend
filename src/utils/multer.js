@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const uuid = require('uuid'); // Add a unique ID for file names
 const dateUtils = require('../helpers/dateUtils');
-const { ApiError } = require('../utils/apiError');
+const { ApiError } = require('./apiError');
 
 // Configuration
 const uploadFolder = process.env.UPLOAD_FOLDER || path.resolve('./public/uploads');
