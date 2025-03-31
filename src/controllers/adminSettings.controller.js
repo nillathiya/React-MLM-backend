@@ -57,7 +57,6 @@ exports.addSetting = async (req, res, next) => {
     }
 };
 
-
 exports.updateAdminSettings = async (req, res, next) => {
     const { id } = req.params;
     const { value, title, label } = req.body;

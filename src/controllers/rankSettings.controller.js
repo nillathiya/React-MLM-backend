@@ -198,11 +198,11 @@ exports.getUserRankAndTeamMetrics = async (req, res, next) => {
 
         const rankData = {
             rank: user.myRank || 0,
-            selfBusiness: selfPackage,
-            directTeam: myDirectTeam,
-            directBusiness: directBusiness,
-            teamSize: totalTeamSize,
-            teamBusiness: totalTeamBusiness,
+            self_business: selfPackage,
+            direct_team: myDirectTeam,
+            direct_business: directBusiness,
+            total_team_size: totalTeamSize,
+            total_team_business: totalTeamBusiness,
         };
         return res.status(200).json(new ApiResponse(200, rankData, "Rank settings fetched successfully"));
     }

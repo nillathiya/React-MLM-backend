@@ -574,14 +574,26 @@ exports.getTransactionsByUser = async (req, res, next) => {
 
 
 exports.getFundTransactionsByUser = async (req, res, next) => {
+    const { status, txType } = req.body;
     const vsuser = req.user;
+
     try {
-        const allTransactions = await FundTransaction.find({ uCode: vsuser._id })
+        const filter = { uCode: vsuser._id }; 
+
+        if (status) {
+            filter.status = status;
+        }
+        if (txType) {
+            filter.txType = txType;
+        }
+
+        const allTransactions = await FundTransaction.find(filter)
             .populate("txUCode", "name email contactNumber username")
             .populate("uCode", "name email contactNumber username");
 
-
-        return res.status(200).json(new ApiResponse(200, allTransactions, "Fetch User All Transactions successfully"));
+        return res
+            .status(200)
+            .json(new ApiResponse(200, allTransactions, "Fetch User All Transactions successfully"));
     } catch (err) {
         next(err);
     }

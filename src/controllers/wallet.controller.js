@@ -69,18 +69,44 @@ exports.getUserWallet = async (req, res, next) => {
         }
         const userId = req.user._id;
 
-        const wallet = await Wallet.findOne({ uCode: userId.toString() });
-
+        const wallet = await Wallet.findOne({ uCode: userId })
         if (!wallet) {
             throw new ApiError(404, "Wallet not found");
         }
+        const walletSettings = await WalletSettings.find({});
+        if (!walletSettings) {
+            throw new ApiError(404, "WalletSettings not found");
+        }
+
+        const skipFields = ["_id", "username", "createdAt", "updatedAt"];
+
+        const walletObj = wallet.toObject();
+        const formWalletData = Object.entries(walletObj)
+            .filter(([key]) => !skipFields.includes(key))
+            .reduce((acc, [key, value]) => {
+                acc[key] = value;
+                return acc;
+            }, {});
+
+
+        const mappedWalletData = walletSettings.reduce((acc, ws) => {
+            acc[ws.slug] = formWalletData[ws.column] || 0;
+            return acc;
+        }, {});
+
+        skipFields.forEach((field) => {
+            if (walletObj[field] !== undefined) {
+                mappedWalletData[field] = walletObj[field];
+            }
+        });
+        console.log("walletSetting", mappedWalletData)
 
         if (!envConfig.CRYPTO_SECRET_KEY) {
             throw new ApiError(500, "Encryption key is not defined");
         }
         // Encrypt the wallet data
         const encryptedWallet = CryptoJS.AES.encrypt(
-            JSON.stringify(wallet),
+            JSON.stringify(mappedWalletData),
             envConfig.CRYPTO_SECRET_KEY
         ).toString();
 

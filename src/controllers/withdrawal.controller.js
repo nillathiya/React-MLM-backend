@@ -170,7 +170,7 @@ exports.getAllWithdrawalTransactions = async (req, res, next) => {
       throw new ApiError(403, "Unauthorized access");
     }
 
-    let filter = { txType: "user_fund_withdrawal" };
+    let filter = { txType: "fund_withdrawal" };
 
     if (postData && typeof postData.status !== "undefined") {
       filter.status = postData.status;
@@ -195,7 +195,7 @@ exports.getUserWithdrawalTransactions = async (req, res, next) => {
   const postData = req.body;
 
   try {
-    let filter = { txType: "user_fund_withdrawal", uCode: vsuser._id };
+    let filter = { txType: "fund_withdrawal", uCode: vsuser._id };
 
     if (postData && Number.isInteger(postData.status)) {
       filter.status = postData.status;
