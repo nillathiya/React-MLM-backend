@@ -4,6 +4,7 @@ const pinDetailsSchema = new Schema(
   {
     pinType: String,
     pinRate: Number,
+    roi: Number,
     bv: String, // Business Volumn
     status: { type: Number, default: 1 },
   },

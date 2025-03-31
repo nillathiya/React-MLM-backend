@@ -1,3 +1,6 @@
+const connectDB = require("../config/db");
+
+connectDB();
 const db = {};
 
 const User = require('./User');

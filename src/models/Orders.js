@@ -9,9 +9,9 @@ const ordersSchema = new Schema(
         txType: String,
         bv: Number,
         pv: String,
-        payOutStatus: { type: Number, default: 0 },
+        payOutStatus: { type: Number, default: 1 },
         amount: Number,
-        status: { type: Number, default: 0 },
+        status: { type: Number, default: 1 },
     },
     {
         timestamps: true,

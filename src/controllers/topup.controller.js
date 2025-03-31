@@ -2,6 +2,7 @@ const { User, Orders, FundTransaction, Wallet, WalletSettings, PinDetail } = req
 const common = require('../helpers/common');
 const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
+const { level } = require('../incomes/model');
 
 const routeHandler = {};
 exports.createTopUp = async (req, res, next) => {
@@ -128,6 +129,10 @@ exports.createTopUp = async (req, res, next) => {
 
     if (!newTransaction) {
       throw new ApiError(400, "Failed to save transaction");
+    }
+    const level_distribution_on_topup = await common.Settings('UserSettings','level_distribution_on_topup');
+    if (level_distribution_on_topup === 'yes') {
+      await level(orderPayload.customerId, orderPayload.bv, 1);
     }
     return res.status(200).json(new ApiResponse(200, newOrder, "Topup successfully"));
   } catch (err) {

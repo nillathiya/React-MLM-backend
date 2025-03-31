@@ -35,6 +35,7 @@ const walletSchema = new Schema(
     c27: { type: Number, default: 0 },
     c28: { type: Number, default: 0 },
     c29: { type: Number, default: 0 },
+    c30: { type: Number, default: 0 },
     c31: { type: Number, default: 0 },
     c32: { type: Number, default: 0 },
     c33: { type: Number, default: 0 },
