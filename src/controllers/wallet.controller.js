@@ -99,7 +99,7 @@ exports.getUserWallet = async (req, res, next) => {
                 mappedWalletData[field] = walletObj[field];
             }
         });
-        console.log("walletSetting", mappedWalletData)
+        // console.log("walletSetting", mappedWalletData)
 
         if (!envConfig.CRYPTO_SECRET_KEY) {
             throw new ApiError(500, "Encryption key is not defined");

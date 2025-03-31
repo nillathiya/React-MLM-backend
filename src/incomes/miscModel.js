@@ -78,10 +78,8 @@ async function defineRewardRanks(){
 // defineRewardRanks();
 
 async function test() {
-    const firstUser = await User.findOne({ username: 'user_578477'});
-    const uCode = firstUser?._id;
-    const teamSize = await team.mygenerationWtihPersonal(uCode);
-    console.log('Team Size:', teamSize);
+    const allUsers = await User.find({"accountStatus.activeStatus" : 1}).select("accountStatus.activeId");
+    console.log("All Users: ", allUsers);
 }
 
 test();

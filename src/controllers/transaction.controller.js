@@ -157,24 +157,25 @@ exports.verifyTransaction = async (req, res, next) => {
 
         // Verify transaction
         const result = await transactionHelper.verify(txHash, amount, userAddress);
+        
         let status = result.status === "true" ? 1 : 0;
-        if (status) {
-            const receiver = result.details.to;
-            const companyBscAddress = await common.companyInfo('company_bsc_address');
-            if (receiver !== companyBscAddress) {
-                status = 0;
-            }
+        if (status!== 1) {
+            throw new ApiError(400, "Invalid Transaction");
         }
+        let walletType = 'fund_wallet';
+        const currentWalletBalance  = await common.getBalance(userId,walletType);
 
         // Insert transaction record in MongoDB
-        const transaction = new Transaction({
-            walletType: "fund_wallet",
-            txType: "user_add_fund",
+        const transaction = new FundTransaction({
+            walletType,
+            txType: "add_fund",
             debitCredit: "credit",
             uCode: userId,
             amount,
             paymentSlip: `${amount} USDT`,
             criptAddress: userAddress,
+            currentWalletBalance,
+            postWalletBalance: Number(currentWalletBalance) + Number(amount),
             criptoType: "USDT",
             status,
             txRecord: txHash,
@@ -183,11 +184,11 @@ exports.verifyTransaction = async (req, res, next) => {
 
         await transaction.save();
 
-        const populatedTransaction = await Transaction.findById(transaction._id)
+        const populatedTransaction = await FundTransaction.findById(transaction._id)
             .populate("txUCode", "name email contactNumber username")
             .populate("uCode", "name email contactNumber username");
 
-
+        await common.mangeWalletAmounts(transaction.uCode,transaction.walletType,transaction.amount); 
         if (status === 1) {
             return res.status(200).json(new ApiResponse(200, populatedTransaction, "USDT added Successfully"));
         } else {

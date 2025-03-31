@@ -13,7 +13,6 @@ const verifyJwt = async (req, res, next) => {
     try {
       // Decode and fetch the user using the Common helper
       const user = await common.getUserByJwt(token);
-      console.log("login user:", user);
 
       if (!user) {
         throw new ApiError(400, "Invalid access token: User not found");

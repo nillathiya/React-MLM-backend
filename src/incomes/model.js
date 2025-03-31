@@ -144,6 +144,7 @@ async function roiIncome() {
 
 async function level(uCode, amount, level = 1) {
     try {
+        console.log("Level Entered:");
         const txUData = await User.findOne({ _id: uCode }, 'username');
         if (!txUData) return;
         
@@ -161,14 +162,20 @@ async function level(uCode, amount, level = 1) {
         
         for (let counter = 1; counter <= Math.min(level, plan.value.length); counter++) {
             const source = counter === 1 ? 'direct' : 'level';
+            console.log("source:",source);
             const walletSettingsData = counter === 1 ? directSettings : levelSettings;
             if (!walletSettingsData) break;
-            
-            const uData = await User.findOne({ uSponsor: currentUCode, "accountStatus.activeStatus": 1, "accountStatus.blockStatus": 0 }, '_id');
+            console.log("walletSettingsData:",walletSettingsData);
+            const uData = await User.findOne({ _id: currentUCode, "accountStatus.activeStatus": 1, "accountStatus.blockStatus": 0 });
             if (!uData || !currentUCode) continue;
-            currentUCode = uData._id;
-            
+            const sponsorUCode = uData.uSponsor;
+            if (!sponsorUCode) break;
+            const sData = await User.findOne({ _id: sponsorUCode, "accountStatus.activeStatus": 1, "accountStatus.blockStatus": 0 });
+            if (!sData) break;
+            currentUCode = sData._id;
+            console.log("sData:",sData);
             const remainingCapping = await common.getTotalUserCappingStatus(currentUCode);
+            console.log("remainingCapping:",remainingCapping);
             if (remainingCapping === 0) continue;
             
             let payable = (parseFloat(plan.value[counter - 1]) * amount) / 100;

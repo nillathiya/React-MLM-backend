@@ -230,10 +230,8 @@ common.getTotalUserCappingStatus = async (uCode) => {
 
 common.planData = async (slug) => {
   try {
-      console.log('plan');
       const PlanData = await Plan.findOne({ slug });
       if (!PlanData) return;
-      console.log('PlanData: ', PlanData);
       return PlanData;
   } catch(e) {
       console.error(`Error in plan: ${e.message}`);

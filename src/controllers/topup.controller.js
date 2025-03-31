@@ -82,15 +82,16 @@ exports.createTopUp = async (req, res, next) => {
       }
     }
 
-    // Activate receiver account if needed
-    if (receiverUser.activeStatus === 0) {
-      await User.updateOne({ _id: receiverUser._id }, { $set: { activeStatus: 1 } });
-    }
+    
 
     // Prepare and save order
-    const lastOrder = await Orders.findOne({ customerId: vsuser._id }).sort({
-      createdAt: -1,
-    });
+    // const lastOrder = await Orders.findOne({ customerId: vsuser._id }).sort({
+    //   createdAt: -1,
+    // });
+    const allUsers = await User.find({"accountStatus.activeStatus" : 1}).select("accountStatus.activeId");
+    const maxActiveId = Math.max(...allUsers.map(user => user.accountStatus.activeId));
+    const newActiveId = maxActiveId + 1;
+
 
     const orderPayload = {
       customerId: vsuser._id,
@@ -99,7 +100,7 @@ exports.createTopUp = async (req, res, next) => {
       amount,
       txType,
       status: 1,
-      activeId: lastOrder ? lastOrder.activeId + 1 : 1,
+      activeId: newActiveId,
     };
 
     const newOrder = await new Orders(orderPayload).save();
@@ -130,8 +131,16 @@ exports.createTopUp = async (req, res, next) => {
     if (!newTransaction) {
       throw new ApiError(400, "Failed to save transaction");
     }
+
+    // Activate receiver account if needed
+    if (receiverUser.accountStatus.activeStatus === 0) {
+      await User.updateOne({ _id: receiverUser._id }, { $set: { "accountStatus.activeStatus": 1, "accountStatus.activeId": newActiveId } });
+    }
+
     const level_distribution_on_topup = await common.Settings('UserSettings','level_distribution_on_topup');
+    
     if (level_distribution_on_topup === 'yes') {
+      console.log("I am Here");
       await level(orderPayload.customerId, orderPayload.bv, 1);
     }
     return res.status(200).json(new ApiResponse(200, newOrder, "Topup successfully"));
