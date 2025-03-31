@@ -1,6 +1,6 @@
 const common = require('../helpers/common');
 const bcrypt = require('bcrypt');
-const { AdminUser, User } = require('../models/DB');
+const { AdminUser, User, UserSession } = require('../models/DB');
 // const FrenchiseUser = require('../models/FrenchiseUser');
 const jwt = require('jsonwebtoken');
 // const MessageService = require('../services/message-service');
@@ -12,6 +12,8 @@ const { ApiResponse } = require('../utils/apiResponse');
 const envConfig = require('../config/envConfig');
 // const mongoose = require('mongoose');
 const { userCookieOptions, adminCookieOptions } = require('../config/cookieOptions');
+const { v4: uuidv4 } = require("uuid");
+
 
 exports.userLogin = async (req, res, next) => {
     const { wallet } = req.body;
@@ -31,9 +33,7 @@ exports.userLogin = async (req, res, next) => {
         // Generate access token
         const token = await user.generateAccessToken();
 
-        res.status(200)
-            .cookie(`userToken_${user._id}`, token, userCookieOptions)
-            .json(new ApiResponse(200, { user, token }, "You are successfully logged in"));
+        res.status(200).json(new ApiResponse(200, { user, token }, "You are successfully logged in"));
     } catch (error) {
         next(error);
     }
@@ -66,9 +66,7 @@ exports.adminLogin = async (req, res, next) => {
         // Generate access token
         const token = await admin.generateAccessToken();
 
-        res.status(200)
-            .cookie("adminToken", token, adminCookieOptions)
-            .json(new ApiResponse(200, { admin, token }, "You are successfully logged in"));
+        res.status(200).json(new ApiResponse(200, { admin, token }, "You are successfully logged in"));
     } catch (error) {
         next(error);
     }
@@ -358,7 +356,6 @@ exports.checkUserToken = async (req, res) => {
         }
 
         res.status(200)
-            .cookie(`userToken_${user._id}`, token, userCookieOptions)
             .json(new ApiResponse(200, { user, token }, "You are successfully logged in"));
 
     } catch (error) {

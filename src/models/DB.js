@@ -15,11 +15,12 @@ const Orders = require('./Orders');
 const PinDetail = require('./PinDetail');
 const AdminSettings = require('./AdminSettings');
 const RankSettings = require('./RankSettings');
-const Plan=require('./Plan');
-const NewsEvent=require('./NewsEvent');
-const ContactUs=require('./ContactUs');
-const CompanyInfo=require('./CompanyInfo');
-const UserSettings=require('./UserSettings');
+const Plan = require('./Plan');
+const NewsEvent = require('./NewsEvent');
+const ContactUs = require('./ContactUs');
+const CompanyInfo = require('./CompanyInfo');
+const UserSettings = require('./UserSettings');
+const UserSession = require('./UserSession');
 
 db.User = User;
 db.Ticket = Ticket;
@@ -33,11 +34,12 @@ db.Orders = Orders;
 db.PinDetail = PinDetail;
 db.AdminSettings = AdminSettings;
 db.RankSettings = RankSettings;
-db.Plan=Plan;
-db.NewsEvent=NewsEvent;
-db.ContactUs=ContactUs;
-db.CompanyInfo=CompanyInfo;
-db.UserSettings=UserSettings;
+db.Plan = Plan;
+db.NewsEvent = NewsEvent;
+db.ContactUs = ContactUs;
+db.CompanyInfo = CompanyInfo;
+db.UserSettings = UserSettings;
+db.UserSession = UserSession;
 
 // For the first time when tables are empty
 for (let collectionname in db) {
