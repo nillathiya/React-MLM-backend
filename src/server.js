@@ -61,7 +61,7 @@ app.use(routes);
 app.use(handleFileUploadError);
 app.use(errorMiddleware);
 
-const PORT = envConfig.PORT || 5000;
+const PORT = envConfig.PORT;
 server.listen(PORT, "0.0.0.0", () => console.log(`Server running on port ${PORT}`));
 
 module.exports = app;

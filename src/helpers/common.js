@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
-const { AdminUser, User, WalletSettings, Wallet, CompanyInfo } = require('../models/DB');
+const mongoose = require('mongoose');
+const { AdminUser, User, WalletSettings, Wallet, CompanyInfo, Plan, UserSettings, RankSettings, AdminSettings } = require('../models/DB');
+const businessUtils = require('./businessUtils');
 
 const common = {};
 
@@ -146,6 +148,44 @@ common.getWalletBalance = (walletSettingTable, userWallet, walletSlug) => {
   return userWallet[walletColumn] || 0;
 };
 
+common.getBalance = async (uCode, walletSlug) => {
+  try {
+    const currentUser = await User.findOne({ _id: uCode });
+    if (!currentUser) {
+      return {
+        status: 0,
+        message: "User not found",
+      };
+    }
+    const walletSetting = await WalletSettings.findOne({ slug: walletSlug, universal: 1 });
+    if (!walletSetting) {
+      return 0;
+    }
+    const stringWalletData = JSON.stringify(walletSetting);
+    const jsonWalletData = JSON.parse(stringWalletData);
+    const walletColumn = jsonWalletData["column"];
+    const wallet = await Wallet.findOne({
+      uCode
+    });
+    if (!wallet) {
+      const walletData = {
+        uCode,
+        username: currentUser.username,
+      };
+      if(!walletData[walletColumn]) {
+        return 0;
+      }
+      const newWallet = new Wallet(walletData);
+      await newWallet.save();
+      return 0;
+    }
+    return wallet[walletColumn];
+  } catch (error) {
+    console.error(error);
+    return 0;
+  }
+}
+
 // Generate a unique slug from title
 common.generateSlug = (title) => {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '_');
@@ -155,5 +195,71 @@ common.companyInfo = async (label) => {
   const cDetails = await CompanyInfo.findOne({ label });
   return cDetails?.value;
 }
+
+common.getTotalUserCappingStatus = async (uCode) => {
+  try {
+    const activeIncomes = await WalletSettings.find({ type: "income", universal: 1 });
+    if (!activeIncomes || activeIncomes.length === 0) {
+      return 0;
+    }
+    console.log('activeIncomes:',activeIncomes);
+
+    const balancePromises = activeIncomes.map(async (income) => {
+      return await common.getBalance(uCode, income.slug);
+    });
+
+    const balances = await Promise.all(balancePromises);
+    
+    const totalBalance = balances.reduce((sum, balance) => sum + (Number(balance) || 0), 0);
+
+    const myPackage = await businessUtils.myPackage(uCode);
+    
+    const cappingMultiplier = 2;
+
+    const totalCap = myPackage * cappingMultiplier;
+
+    if (totalBalance > totalCap) {
+      return 0;
+    }
+    return totalCap-totalBalance;
+  } catch (error) {
+    console.error(error);
+    return 0;
+  }
+};
+
+common.planData = async (slug) => {
+  try {
+      console.log('plan');
+      const PlanData = await Plan.findOne({ slug });
+      if (!PlanData) return;
+      console.log('PlanData: ', PlanData);
+      return PlanData;
+  } catch(e) {
+      console.error(`Error in plan: ${e.message}`);
+  }
+}
+
+common.Settings = async (dbCollection, slug) => {
+  try {
+      const collection = mongoose.connection.collection(dbCollection.toLowerCase());
+      const SettingsData = await collection.findOne({ slug, status: 1 });
+      if (!SettingsData) return;
+      return SettingsData.value;
+  } catch(e) {
+      console.error(`Error in settings: ${e.message}`);
+  }
+}
+
+common.rankSettings = async () => {
+  try {
+      const rankSettingsData = await RankSettings.find({ status: 1 });
+      if (!rankSettingsData) return;
+      return rankSettingsData;
+  } catch(e) {
+      console.error(`Error in rank settings: ${e.message}`);
+  }
+}
+
 
 module.exports = common;
