@@ -128,8 +128,8 @@ async function roiIncome() {
                     walletSettingsData.wallet && common.mangeWalletAmounts(user._id, walletSettingsData.wallet, payable * 0.25),
                     common.mangeWalletAmounts(user._id, 'weekly_pool', payable * 0.45),
                     common.mangeWalletAmounts(user._id, 'monthly_pool', payable * 0.30),
-                    roi_level_commission(user._id, payable, 25)
                 );
+                roi_level_commission(user._id, payable, 25);
             }
         }
         
