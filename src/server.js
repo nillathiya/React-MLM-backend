@@ -17,11 +17,10 @@ const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
         origin: [
-            "https://test.swisscorpminer.com",
-            "https://admin.swisscorpminer.com",
+            "https://bitx.kxtrade.org",
+            "https://bitxadmin.kxtrade.org",
             "http://localhost:3000",
             "http://localhost:5173",
-            "http://192.168.29.19:5173",
         ],
         methods: ["GET", "POST", "DELETE", "PUT"],
         credentials: true,
@@ -39,11 +38,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
     origin: [
-        "https://test.swisscorpminer.com",
-        "https://admin.swisscorpminer.com",
+        "https://bitx.kxtrade.org",
+        "https://bitxadmin.kxtrade.org",
         "http://localhost:3000",
         "http://localhost:5173",
-        "http://192.168.29.19:5173"
     ],
     credentials: true,  // ✅ Ensures cookies are sent
     methods: ["GET", "POST", "DELETE", "PUT"],
