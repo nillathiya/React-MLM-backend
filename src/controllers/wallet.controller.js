@@ -41,7 +41,7 @@ exports.update = async (req, res, next) => {
     const { slug, amount, userId } = req.body;
 
     try {
-        const mangeWalletTransaction = await common.mangeWalletAmounts(
+        const mangeWalletTransaction = await common.manageWalletAmounts(
             userId,
             slug,
             amount

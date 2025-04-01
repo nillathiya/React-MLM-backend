@@ -67,8 +67,15 @@ common.requestFieldsValidation = async (fields = [], postData = {}) => {
 };
 
 
-common.mangeWalletAmounts = async (userId, slug, amount) => {
+common.manageWalletAmounts = async (userId, slug, amount) => {
   try {
+    // Ensure amount is always a number
+    const amountNumber = Number(amount);
+    
+    // Check if amount is a valid number
+    if (isNaN(amountNumber)) {
+      return { status: 0, message: "Invalid amount provided. It should be a number." };
+    }
 
     const currentUser = await User.findOne({ _id: userId });
     if (!currentUser) {
@@ -77,6 +84,7 @@ common.mangeWalletAmounts = async (userId, slug, amount) => {
         message: "User not found",
       };
     }
+
     const walletSetting = await WalletSettings.findOne({
       slug: slug,
     });
@@ -84,39 +92,42 @@ common.mangeWalletAmounts = async (userId, slug, amount) => {
       return {
         status: 0,
         message: "WalletSetting not found",
-      }
+      };
     }
+
     const stringWalletData = JSON.stringify(walletSetting);
     const jsonWalletData = JSON.parse(stringWalletData);
     const walletColumn = jsonWalletData["column"];
+    
     const wallet = await Wallet.findOne({
       uCode: currentUser._id,
     });
+    
     if (!wallet) {
       const walletData = {
         uCode: currentUser._id,
         username: currentUser.username,
       };
-      walletData[walletColumn] = amount;
+      walletData[walletColumn] = amountNumber; // use amountNumber here
       const newWallet = new Wallet(walletData);
       const createNewWallet = await newWallet.save();
       if (!createNewWallet) {
         return { status: 0, message: "Wallet not created" };
       }
     } else {
-
       const oldAmount = wallet[walletColumn];
-
+      
       let newAmount = oldAmount || 0;
-      if (amount > 0) {
-        newAmount = oldAmount + amount;
+      if (amountNumber > 0) {
+        newAmount = oldAmount + amountNumber;
       } else {
-        newAmount = oldAmount - Math.abs(amount);
+        newAmount = oldAmount - Math.abs(amountNumber);
       }
 
       if (newAmount < 0) {
-        return { status: 0, message: "Wallet don't have enough Balance" };
+        return { status: 0, message: "Wallet doesn't have enough Balance" };
       }
+      
       // update wallet
       const walletUpdatedData = {
         [walletColumn]: newAmount,
@@ -132,9 +143,10 @@ common.mangeWalletAmounts = async (userId, slug, amount) => {
         return { status: 0, message: "Wallet not found" };
       }
     }
-    return { status: 1, message: "Records Update successfully." };
+
+    return { status: 1, message: "Records updated successfully." };
   } catch (err) {
-    return { status: 0, message: err };
+    return { status: 0, message: err.message || err };
   }
 };
 

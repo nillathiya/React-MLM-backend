@@ -53,10 +53,10 @@ distribute.directDistribute = async (uCode, amount, level) => {
                 const res = await IncomeTransaction.create(incomeLoad);
 
                 if (res) {
-                    common.mangeWalletAmounts(code, source, incomeLoad.amount);
-                    common.mangeWalletAmounts(code, incomeLoad.walletType, instant);
-                    common.mangeWalletAmounts(code, 'weekly', weekly);
-                    common.mangeWalletAmounts(code, 'monthly', monthly);
+                    common.manageWalletAmounts(code, source, incomeLoad.amount);
+                    common.manageWalletAmounts(code, incomeLoad.walletType, instant);
+                    common.manageWalletAmounts(code, 'weekly', weekly);
+                    common.manageWalletAmounts(code, 'monthly', monthly);
                 }
 
                 code = codeProfile.sponsor;
@@ -119,10 +119,10 @@ distribute.levelRoiDistribute = async (uCode, amount, level) => {
                 const res = await IncomeTransaction.create(incomeLoad);
 
                 if (res) {
-                    common.mangeWalletAmounts(code, source, incomeLoad.amount);
-                    common.mangeWalletAmounts(code, incomeLoad.walletType, instant);
-                    common.mangeWalletAmounts(code, 'weekly', weekly);
-                    common.mangeWalletAmounts(code, 'monthly', monthly);
+                    common.manageWalletAmounts(code, source, incomeLoad.amount);
+                    common.manageWalletAmounts(code, incomeLoad.walletType, instant);
+                    common.manageWalletAmounts(code, 'weekly', weekly);
+                    common.manageWalletAmounts(code, 'monthly', monthly);
                 }
 
                 code = codeProfile.sponsor;

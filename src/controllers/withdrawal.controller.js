@@ -34,10 +34,10 @@ exports.createRequest = async (req, res, next) => {
     const walletType = postData.walletType;
     const currentWalletBalance = common.getWalletBalance(walletSettingTable, userWallet, walletType);
 
-    const WithdrawalChargeSettings = await AdminSettings.findOne({ slug: "withdrawal_charge" });
-    if (!WithdrawalChargeSettings) {
-      throw new ApiError(404, "Withdrawal charge settings not found");
-    }
+    // const WithdrawalChargeSettings = await AdminSettings.findOne({ slug: "withdrawal_charge" });
+    // if (!WithdrawalChargeSettings) {
+    //   throw new ApiError(404, "Withdrawal charge settings not found");
+    // }
 
 
     if (postData.amount > currentWalletBalance) {
@@ -45,7 +45,7 @@ exports.createRequest = async (req, res, next) => {
     }
 
     const transferAmount = -postData.amount;
-    const mangeTransaction = await common.mangeWalletAmounts(vsuser._id, walletType, transferAmount);
+    const mangeTransaction = await common.manageWalletAmounts(vsuser._id, walletType, transferAmount);
 
     if (!mangeTransaction.status) {
       throw new ApiError(400, mangeTransaction.message);
@@ -54,21 +54,21 @@ exports.createRequest = async (req, res, next) => {
     // Update wallet balance before storing transaction
     const updatedWalletBalance = currentWalletBalance - postData.amount;
 
-    const totalCharge = parseFloat(((WithdrawalChargeSettings.value * postData.amount) / 100).toFixed(2));
+    const amount = parseFloat(postData.amount);
 
-    const AdminCharge = parseFloat(((10 / WithdrawalChargeSettings.value) * totalCharge).toFixed(2));
-    const wPoolCharge = parseFloat(((5 / WithdrawalChargeSettings.value) * totalCharge).toFixed(2));
-
+    const totalCharge = amount * 0.15;
+    const adminCharge = amount * 0.10;
+    const wPoolCharge = amount * 0.05;
 
     const newTransactionData = {
       uCode: vsuser._id,
       postWalletBalance: updatedWalletBalance,
-      currentWalletBalance: updatedWalletBalance,
+      currentWalletBalance,
       txType: postData.txType,
       debitCredit: "DEBIT",
       walletType: postData.walletType,
       amount: postData.amount - totalCharge,
-      txCharge: AdminCharge,
+      txCharge: adminCharge,
       wPool: wPoolCharge,
       remark: `Transaction ${postData.txType} of ${postData.amount} for ${walletType}`
     };
@@ -120,8 +120,8 @@ exports.updateRequest = async (req, res, next) => {
 
     // Handle wallet update if transaction is canceled (status = 2)
     if (parseInt(postData.status, 10) === 2) {
-      const refundAmount = transaction.amount + Number(transaction.txCharge || 0);
-      const manageTransaction = await common.mangeWalletAmounts(
+      const refundAmount = transaction.amount + Number(transaction.txCharge || 0) + Number(transaction.wPool);
+      const manageTransaction = await common.manageWalletAmounts(
         transaction.uCode,
         transaction.walletType,
         refundAmount

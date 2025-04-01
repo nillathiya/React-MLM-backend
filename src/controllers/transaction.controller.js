@@ -157,13 +157,13 @@ exports.verifyTransaction = async (req, res, next) => {
 
         // Verify transaction
         const result = await transactionHelper.verify(txHash, amount, userAddress);
-        
+
         let status = result.status === "true" ? 1 : 0;
-        if (status!== 1) {
+        if (status !== 1) {
             throw new ApiError(400, "Invalid Transaction");
         }
         let walletType = 'fund_wallet';
-        const currentWalletBalance  = await common.getBalance(userId,walletType);
+        const currentWalletBalance = await common.getBalance(userId, walletType);
 
         // Insert transaction record in MongoDB
         const transaction = new FundTransaction({
@@ -188,7 +188,7 @@ exports.verifyTransaction = async (req, res, next) => {
             .populate("txUCode", "name email contactNumber username")
             .populate("uCode", "name email contactNumber username");
 
-        await common.mangeWalletAmounts(transaction.uCode,transaction.walletType,transaction.amount); 
+        await common.manageWalletAmounts(transaction.uCode, transaction.walletType, transaction.amount);
         if (status === 1) {
             return res.status(200).json(new ApiResponse(200, populatedTransaction, "USDT added Successfully"));
         } else {
@@ -305,12 +305,12 @@ exports.userFundTransfer = async (req, res, next) => {
             .exec();
 
         // Add funds to receiver wallet
-        const manageReceiverTransaction = await common.mangeWalletAmounts(receiverUser._id, postData.walletType, postData.amount);
+        const manageReceiverTransaction = await common.manageWalletAmounts(receiverUser._id, postData.walletType, postData.amount);
 
         // Debit amount from sender wallet
         const transferAmount = postData.amount;
         const senderUserAmount = -transferAmount;
-        const manageSenderTransaction = await common.mangeWalletAmounts(vsuser._id, postData.walletType, senderUserAmount);
+        const manageSenderTransaction = await common.manageWalletAmounts(vsuser._id, postData.walletType, senderUserAmount);
 
         if (!manageSenderTransaction.status) {
             throw new ApiError(500, "Failed to debit amount from sender's wallet. Please try again.");
@@ -367,7 +367,7 @@ exports.userConvertFunds = async (req, res, next) => {
         // from wallet
         const amount = parseFloat(postData.amount);
         const transferAmount = 0 - amount;
-        const mangeFromWalletTransaction = await common.mangeWalletAmounts(
+        const mangeFromWalletTransaction = await common.manageWalletAmounts(
             userId,
             fromWalletType,
             transferAmount
@@ -376,7 +376,7 @@ exports.userConvertFunds = async (req, res, next) => {
             throw new ApiError(400, mangeWalletTransaction.message || "Transaction Failed.Please try later")
         }
 
-        const mangeWalletTransaction = await common.mangeWalletAmounts(
+        const mangeWalletTransaction = await common.manageWalletAmounts(
             userId,
             walletType,
             amount
@@ -579,7 +579,7 @@ exports.getFundTransactionsByUser = async (req, res, next) => {
     const vsuser = req.user;
 
     try {
-        const filter = { uCode: vsuser._id }; 
+        const filter = { uCode: vsuser._id };
 
         if (status) {
             filter.status = status;
@@ -746,7 +746,7 @@ exports.directFundTransfer = async (req, res, next) => {
 
         // Adjust wallet balance
         const transferAmount = debitCredit === "DEBIT" ? -amount : amount;
-        const walletAdjustment = await common.mangeWalletAmounts(userId, walletType, transferAmount);
+        const walletAdjustment = await common.manageWalletAmounts(userId, walletType, transferAmount);
         console.log("walletAdjustment", walletAdjustment)
         if (!walletAdjustment.status) {
             throw new ApiError(500, walletAdjustment.message || "Wallet adjustment failed.");

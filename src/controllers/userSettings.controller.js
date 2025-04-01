@@ -61,8 +61,26 @@ exports.updateUserSettings = async (req, res, next) => {
 };
 
 exports.createUserSetting = async (req, res, next) => {
+  const { title, name, slug, options, value, type, status, adminStatus } = req.body;
+
   try {
-    const newSetting = new UserSettings(req.body);
+    // Check if the setting already exists
+    const existingSetting = await UserSettings.findOne({ slug });
+    if (existingSetting) {
+      return res.status(400).json({ message: "Setting with this slug already exists" });
+    }
+    // Create a new setting
+    const newSetting = new UserSettings({
+      title,
+      name,
+      slug,
+      options,
+      value,
+      type,
+      status,
+      adminStatus
+    });
+
     await newSetting.save();
     res.status(201).json(new ApiResponse(201, newSetting, "Setting Created!"));
   } catch (error) {

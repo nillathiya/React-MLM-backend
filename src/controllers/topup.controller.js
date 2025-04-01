@@ -34,24 +34,14 @@ exports.createTopUp = async (req, res, next) => {
     if (!receiverUser) {
       throw new ApiError(400, "Receiver user not found");
     }
-    if (amount < pinDetail.pinRate) {
-      throw new ApiError(400, `Top-up amount should be greater than or equal to ${pinDetail.pinRate}`);
-    }
-    // Wallet handling
-    const walletSettings = await WalletSettings.find();
-    if (!walletSettings.length) {
-      throw new ApiError(400, "Wallet settings not found");
+    if (amount < pinDetail.pinRate || amount > pinDetail.pinRate) {
+      throw new ApiError(400, `Top-up amount should be equal to ${pinDetail.pinRate}`);
     }
 
-    const senderWallet = await Wallet.findOne({ uCode: vsuser._id });
-    if (!senderWallet) {
-      throw new ApiError(400, "Sender wallet not found");
-    }
-
-    const walletType = "fund_wallet";
-    const currentBalance = common.getWalletBalance(
-      walletSettings,
-      senderWallet,
+    const walletType = await common.Settings("usersettings", "topup_fund_wallet");
+    // console.log("walletType",walletType);
+    const currentBalance = await common.getBalance(
+      vsuser._id,
       walletType
     );
 
@@ -62,7 +52,7 @@ exports.createTopUp = async (req, res, next) => {
     if (receiverUser._id === vsuser._id) {
       // Perform transactions
       const [senderTransaction] = await Promise.all([
-        common.mangeWalletAmounts(vsuser._id, walletType, -amount),
+        common.manageWalletAmounts(vsuser._id, walletType, -amount),
       ]);
 
       if (!senderTransaction.status) {
@@ -71,8 +61,8 @@ exports.createTopUp = async (req, res, next) => {
     } else {
       // Perform transactions
       const [senderTransaction, receiverTransaction] = await Promise.all([
-        common.mangeWalletAmounts(vsuser._id, walletType, -amount),
-        common.mangeWalletAmounts(receiverUser._id, walletType, amount),
+        common.manageWalletAmounts(vsuser._id, walletType, -amount),
+        common.manageWalletAmounts(receiverUser._id, walletType, amount),
       ]);
 
       if (!senderTransaction.status || !receiverTransaction.status) {
@@ -82,13 +72,11 @@ exports.createTopUp = async (req, res, next) => {
       }
     }
 
-    
-
     // Prepare and save order
     // const lastOrder = await Orders.findOne({ customerId: vsuser._id }).sort({
     //   createdAt: -1,
     // });
-    const allUsers = await User.find({"accountStatus.activeStatus" : 1}).select("accountStatus.activeId");
+    const allUsers = await User.find({ "accountStatus.activeStatus": 1 }).select("accountStatus.activeId");
     const maxActiveId = Math.max(...allUsers.map(user => user.accountStatus.activeId));
     const newActiveId = maxActiveId + 1;
 
@@ -96,7 +84,7 @@ exports.createTopUp = async (req, res, next) => {
     const orderPayload = {
       customerId: vsuser._id,
       pinId,
-      bv:amount,
+      bv: amount,
       amount,
       txType,
       status: 1,
@@ -137,8 +125,8 @@ exports.createTopUp = async (req, res, next) => {
       await User.updateOne({ _id: receiverUser._id }, { $set: { "accountStatus.activeStatus": 1, "accountStatus.activeId": newActiveId } });
     }
 
-    const level_distribution_on_topup = await common.Settings('UserSettings','level_distribution_on_topup');
-    
+    const level_distribution_on_topup = await common.Settings('UserSettings', 'level_distribution_on_topup');
+
     if (level_distribution_on_topup === 'yes') {
       console.log("I am Here");
       await level(orderPayload.customerId, orderPayload.bv, 1);
@@ -239,7 +227,7 @@ exports.createTopUp = async (req, res, next) => {
 //       );
 
 //       if (postData.status === 0) {
-//         const walletTransaction = await Common.mangeWalletAmounts(
+//         const walletTransaction = await Common.manageWalletAmounts(
 //           userId,
 //           walletType,
 //           amount
@@ -277,7 +265,7 @@ exports.createTopUp = async (req, res, next) => {
 //             message: "Insufficient wallet balance",
 //           });
 //         }
-//         const walletTransaction = await Common.mangeWalletAmounts(
+//         const walletTransaction = await Common.manageWalletAmounts(
 //           userId,
 //           walletType,
 //           -amount

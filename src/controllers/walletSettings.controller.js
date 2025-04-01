@@ -5,9 +5,6 @@ const { WalletSettings } = require('../models/DB');
 
 exports.getWalletSettings = async (req, res, next) => {
     try {
-        if (!req._IS_ADMIN_ACCOUNT) {
-            throw new ApiError(400, "Unauthorized access");
-        }
         const settings = await WalletSettings.find({});
         return res.status(200).json(new ApiResponse(200, settings, "settings get successfully"));
     } catch (err) {
