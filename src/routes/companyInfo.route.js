@@ -6,7 +6,7 @@ const { upload } = require('../utils/multer');
 
 router.post("/create", verifyJwt, companyInfoController.create);
 router.post("/update/:id", verifyJwt, upload.single("file"), companyInfoController.updateCompanyInfo);
-router.post("/get", verifyJwt, companyInfoController.getAllCompanyInfo);
+router.post("/get", companyInfoController.getAllCompanyInfo);
 router.post("/delete", verifyJwt, companyInfoController.deleteCompanyInfo);
 
 module.exports = router;
