@@ -1,0 +1,163 @@
+[
+  {
+    "_id": "67eb6f4274911077b2c69cd6",
+    "title": "Fund",
+    "name": "Fund Transfer Wallets",
+    "slug": "fund_transfer_wallets",
+    "options": [
+      "main_wallet",
+      "fund_wallet"
+    ],
+    "value": [
+      "main_wallet",
+      "fund_wallet"
+    ],
+    "type": "singular_array",
+    "status": 1,
+    "adminStatus": 1,
+    "createdAt": "2025-04-01T04:44:50.426Z",
+    "updatedAt": "2025-04-01T04:44:50.426Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb70fe90b3427615cc23c8",
+    "title": "Investment",
+    "name": "Add Fund Wallet",
+    "slug": "add_fund_wallet",
+    "options": [
+      "main_wallet",
+      "fund_wallet"
+    ],
+    "value": "fund_wallet",
+    "type": "string",
+    "status": 1,
+    "adminStatus": 1,
+    "createdAt": "2025-04-01T04:52:14.845Z",
+    "updatedAt": "2025-04-01T04:52:14.845Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb71a690b3427615cc23cc",
+    "title": "Withdrawal",
+    "name": "Withdrawal Days",
+    "slug": "withdrawal_days",
+    "options": [
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday"
+    ],
+    "value": "[\"monday\",\"tuesday\",\"wednesday\",\"thursday\"]",
+    "type": "singular_array",
+    "status": 1,
+    "adminStatus": 1,
+    "createdAt": "2025-04-01T04:55:02.699Z",
+    "updatedAt": "2025-04-01T09:45:45.291Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb71ea90b3427615cc23d0",
+    "title": "Withdrawal",
+    "name": "Withdrawal Wallets",
+    "slug": "withdrawal_wallets",
+    "options": [
+      "main_wallet",
+      "fund_wallet"
+    ],
+    "value": [
+      "main_wallet",
+      "fund_wallet"
+    ],
+    "type": "singular_array",
+    "status": 1,
+    "adminStatus": 1,
+    "createdAt": "2025-04-01T04:56:10.547Z",
+    "updatedAt": "2025-04-01T04:56:10.547Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb720390b3427615cc23d4",
+    "title": "Fund",
+    "name": "Fund Convert To Wallets",
+    "slug": "fund_convert_to_wallets",
+    "options": [
+      "main_wallet",
+      "fund_wallet"
+    ],
+    "value": [
+      "main_wallet",
+      "fund_wallet"
+    ],
+    "type": "singular_array",
+    "status": 1,
+    "adminStatus": 1,
+    "createdAt": "2025-04-01T04:56:35.909Z",
+    "updatedAt": "2025-04-01T04:56:35.909Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb721690b3427615cc23d8",
+    "title": "Fund",
+    "name": "Fund Convert From Wallets",
+    "slug": "fund_convert_from_wallets",
+    "options": [
+      "main_wallet",
+      "fund_wallet"
+    ],
+    "value": [
+      "main_wallet",
+      "fund_wallet"
+    ],
+    "type": "singular_array",
+    "status": 1,
+    "adminStatus": 1,
+    "createdAt": "2025-04-01T04:56:54.839Z",
+    "updatedAt": "2025-04-01T04:56:54.839Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb73e780ef6d65b5717c75",
+    "title": "Withdrawal",
+    "name": "Min Withdrawal Limit",
+    "slug": "min_withdrawal_limit",
+    "options": [],
+    "value": 10,
+    "type": "number",
+    "status": 1,
+    "adminStatus": 1,
+    "createdAt": "2025-04-01T05:04:39.178Z",
+    "updatedAt": "2025-04-01T05:04:39.178Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb741c80ef6d65b5717c7b",
+    "title": "Withdrawal",
+    "name": "Max Withdrawal Limit",
+    "slug": "max_withdrawal_limit",
+    "options": [],
+    "value": 200,
+    "type": "number",
+    "status": 1,
+    "adminStatus": 1,
+    "createdAt": "2025-04-01T05:05:32.122Z",
+    "updatedAt": "2025-04-01T05:05:32.122Z",
+    "__v": 0
+  },
+  {
+    "_id": "67eb8734a880169b0e66e3cc",
+    "title": "Investment",
+    "name": "TopUp Fund wallet",
+    "slug": "topup_fund_wallet",
+    "options": [],
+    "value": "fund_wallet",
+    "type": "string",
+    "status": 1,
+    "adminStatus": 1,
+    "createdAt": "2025-04-01T06:27:00.663Z",
+    "updatedAt": "2025-04-01T06:27:00.663Z",
+    "__v": 0
+  }
+]

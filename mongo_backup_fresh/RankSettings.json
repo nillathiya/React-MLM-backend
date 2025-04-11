@@ -1,0 +1,155 @@
+[
+  {
+    "_id": "67e8800305fb6945a4313011",
+    "title": "Self Business",
+    "slug": "self_business",
+    "type": "currency",
+    "value": [
+      "500",
+      "500",
+      "1500",
+      "2500",
+      "3500",
+      "5000",
+      "10000"
+    ],
+    "status": 1,
+    "__v": 0
+  },
+  {
+    "_id": "67e8803205fb6945a4313015",
+    "title": "Direct Team",
+    "slug": "direct_team",
+    "type": "number",
+    "value": [
+      "5",
+      "10",
+      "15",
+      "18",
+      "20",
+      "30",
+      "50"
+    ],
+    "status": 1,
+    "__v": 0
+  },
+  {
+    "_id": "67e8806e05fb6945a4313019",
+    "title": "Direct Business",
+    "slug": "direct_business",
+    "type": "currency",
+    "value": [
+      "500",
+      "1500",
+      "3000",
+      "7500",
+      "10000",
+      "15000",
+      "25000"
+    ],
+    "status": 1,
+    "__v": 0
+  },
+  {
+    "_id": "67e880ad05fb6945a431301d",
+    "title": "Total Team Size",
+    "slug": "total_team_size",
+    "type": "number",
+    "value": [
+      "15",
+      "30",
+      "100",
+      "100",
+      "100",
+      "100",
+      "100"
+    ],
+    "status": 1,
+    "__v": 0
+  },
+  {
+    "_id": "67e8810a05fb6945a4313021",
+    "title": "DownLine Achievers",
+    "slug": "downline_achievers",
+    "type": "number",
+    "value": [
+      "0",
+      "0",
+      "0",
+      "3",
+      "3",
+      "3",
+      "3"
+    ],
+    "status": 1,
+    "__v": 0
+  },
+  {
+    "_id": "67e8814005fb6945a4313025",
+    "title": "Total Team Business",
+    "slug": "total_team_business",
+    "type": "currency",
+    "value": [
+      "10000",
+      "25000",
+      "50000",
+      "0",
+      "0",
+      "0",
+      "0"
+    ],
+    "status": 1,
+    "__v": 0
+  },
+  {
+    "_id": "67e881a605fb6945a431302e",
+    "title": "Monthly Reward",
+    "slug": "reward",
+    "type": "currency",
+    "value": [
+      "100",
+      "150",
+      "500",
+      "1500",
+      "2500",
+      "3000",
+      "5000"
+    ],
+    "status": 1,
+    "__v": 0
+  },
+  {
+    "_id": "67e881da05fb6945a4313032",
+    "title": "Months",
+    "slug": "months",
+    "type": "number",
+    "value": [
+      "3",
+      "3",
+      "3",
+      "5",
+      "10",
+      "10",
+      "10"
+    ],
+    "status": 1,
+    "__v": 0
+  },
+  {
+    "_id": "67e8828b05fb6945a4313036",
+    "title": "Rank",
+    "slug": "rank",
+    "type": "text",
+    "value": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "status": 1,
+    "__v": 0
+  }
+]

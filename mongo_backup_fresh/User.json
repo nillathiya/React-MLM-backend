@@ -1,0 +1,40 @@
+[
+  {
+    "_id": "67bfeebc40efe9cb102c6654",
+    "uSponsor": null,
+    "name": "username",
+    "email": "krish@gmail.com",
+    "password": "$2a$10$1AujVWwz61ZwFMrcbp8YvOJgDhX2XmoQ5wqjOBCTnItmJ5hxgQFNW",
+    "mobile": "8140205170",
+    "username": "user_394845",
+    "dob": "2025-02-28T00:00:00.000Z",
+    "gender": "male",
+    "profilePicture": "/uploads/2025-03-05_659371a0-254d-4c46-a31d-78353056b6f5_about.jpg",
+    "address": {
+      "line1": "A-302, Panvel Palace",
+      "line2": "mumbai",
+      "country": {
+        "dialCode": "91",
+        "label": "India",
+        "value": "IN"
+      },
+      "countryCode": "91"
+    },
+    "accountStatus": {
+      "activeStatus": 1,
+      "blockStatus": 0,
+      "activeId": 0
+    },
+    "role": 2,
+    "status": 1,
+    "walletAddress": "0x6e172756dB77a6d687BB66E5ABE5C8d3EB33D15f",
+    "withdrawStatus": 1,
+    "kycStatus": 2,
+    "position": 0,
+    "accessLevel": [],
+    "myRank": 1,
+    "createdAt": "2025-02-27T04:49:00.821Z",
+    "updatedAt": "2025-04-01T09:24:19.204Z",
+    "__v": 0
+  }
+]

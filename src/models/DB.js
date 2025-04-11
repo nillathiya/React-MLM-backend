@@ -1,3 +1,4 @@
+// src/models/DB.js
 const connectDB = require("../config/db");
 
 connectDB();
