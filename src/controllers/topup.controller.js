@@ -2,7 +2,7 @@ const { User, Orders, FundTransaction, Wallet, WalletSettings, PinDetail } = req
 const common = require('../helpers/common');
 const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
-const { level } = require('../incomes/model');
+const incomeModel = require('../incomes/model');
 
 const routeHandler = {};
 exports.createTopUp = async (req, res, next) => {
@@ -129,7 +129,7 @@ exports.createTopUp = async (req, res, next) => {
 
     if (level_distribution_on_topup === 'yes') {
       console.log("I am Here");
-      await level(orderPayload.customerId, orderPayload.bv, 1);
+      await incomeModel.level(orderPayload.customerId, orderPayload.bv, 1);
     }
     return res.status(200).json(new ApiResponse(200, newOrder, "Topup successfully"));
   } catch (err) {

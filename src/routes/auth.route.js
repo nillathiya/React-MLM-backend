@@ -14,4 +14,6 @@ router.post("/user/check-wallet", authController.checkWallet);
 router.post("/user/logout", authController.userLogout);
 router.post("/change-password", verifyJwt, authController.changePassword);
 
+router.post("/check-sponsor", authController.checkSponsor);
+
 module.exports = router;

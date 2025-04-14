@@ -5,22 +5,31 @@ const businessUtils = {}
 // Ensure userId is mongoose objectId
 businessUtils.myPackage = async (userId) => {
     try {
+        // console.log("userId",userId);
+        // Ensure userId is renamed to customerId in the condition for consistency
         const matchCondition = Array.isArray(userId)
             ? { customerId: { $in: userId }, status: 1 }
             : { customerId: userId, status: 1 };
 
         // console.log("matchCondition", matchCondition);
-
+        
         const result = await Orders.aggregate([
             { $match: matchCondition },
             { $group: { _id: "$customerId", totalBV: { $sum: "$bv" } } }
         ]);
 
-        // console.log("result: " + result);
+        // console.log("result: ", result);
 
         if (!result.length) return 0;
 
-        return Array.isArray(userId) ? result[0].totalBV : result[0].totalBV;
+        // Return appropriate value based on input type
+        if (Array.isArray(userId)) {
+            // For array input, return array of results or sum of all totals
+            return result.reduce((sum, item) => sum + item.totalBV, 0);
+        } else {
+            // For single ID, return single total
+            return result[0].totalBV;
+        }
     } catch (error) {
         console.error("Error in myPackage:", error);
         return 0;

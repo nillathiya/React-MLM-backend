@@ -15,7 +15,7 @@ async function weeklyDistribution() {
         const transferPromises = usersData
             .map((user, index) => ({ uCode: user._id, balance: balances[index] }))
             .filter(item => item.balance > 0)
-            .map(item => addToWallet(item.uCode, fromWallet, toWallet, item.balance));
+            .map(item => addToWallet(item.uCode, fromWallet, toWallet, item.balance * 20 / 100));
 
         await Promise.all(transferPromises);
     } catch (e) {
@@ -37,7 +37,7 @@ async function monthlyDistribution() {
         const transferPromises = usersData
             .map((user, index) => ({ uCode: user._id, balance: balances[index] }))
             .filter(item => item.balance > 0)
-            .map(item => addToWallet(item.uCode, fromWallet, toWallet, item.balance));
+            .map(item => addToWallet(item.uCode, fromWallet, toWallet, item.balance * 15 / 100));
 
         await Promise.all(transferPromises);
     } catch (e) {
@@ -77,30 +77,31 @@ async function roiIncome() {
         const ordersData = await Orders.find({ payOutStatus: 1, status: 1 })
             .populate('customerId', 'accountStatus')
             .populate('pinId', 'roi status');
-
+        
         if (!ordersData?.length) return;
 
-        const [walletSettingsData, userCappings] = await Promise.all([
-            WalletSettings.findOne({ slug: 'roi', type: 'income', universal: 1 }),
-            common.getTotalUserCappingStatus(ordersData.map(order => order.customerId))
+        const [walletSettingsData] = await Promise.all([
+            WalletSettings.findOne({ slug: 'roi', type: 'income', universal: 1 })
         ]);
-
+        
         const transactions = [];
         const walletUpdates = [];
 
         for (let order of ordersData) {
             const { _id, bv, customerId, pinId } = order;
             if (bv <= 0 || !customerId) continue;
-
+            
             const user = customerId;
+            
             if (!user || user.accountStatus.activeStatus === 0 || user.accountStatus.blockStatus === 1) continue;
-
-            const remainingCapping = userCappings[user._id] || 0;
+            
+            const remainingCapping = await common.getTotalUserCappingStatus(user._id);
+            
             if (remainingCapping === 0) continue;
-
+            
             const pin = pinId;
             if (!pin || pin.status === 0 || pin.status === 2 || pin.roi < 0) continue;
-
+            
             let payable = pin.roi * bv / 100;
             if (payable > remainingCapping) payable = remainingCapping;
 
@@ -118,14 +119,14 @@ async function roiIncome() {
                     txCharge: 0,
                     currentWalletBalance,
                     postWalletBalance,
-                    remark: `${walletSettingsData.name} of ${payable} generated`,
+                    remark: `${walletSettingsData.name} of $ ${payable} generated`,
                     response: _id.toString(),
                     status: 1
                 });
 
                 walletUpdates.push(
                     common.manageWalletAmounts(user._id, 'roi', payable),
-                    walletSettingsData.wallet && common.manageWalletAmounts(user._id, walletSettingsData.wallet, payable * 0.25),
+                    common.manageWalletAmounts(user._id, walletSettingsData.wallet, payable * 0.25),
                     common.manageWalletAmounts(user._id, 'weekly_pool', payable * 0.45),
                     common.manageWalletAmounts(user._id, 'monthly_pool', payable * 0.30),
                 );
@@ -144,7 +145,7 @@ async function roiIncome() {
 
 async function level(uCode, amount, level = 1) {
     try {
-        console.log("Level Entered:");
+        // console.log("Level Entered:");
         const txUData = await User.findOne({ _id: uCode }, 'username');
         if (!txUData) return;
 
@@ -163,19 +164,21 @@ async function level(uCode, amount, level = 1) {
         for (let counter = 1; counter <= Math.min(level, plan.value.length); counter++) {
             const source = counter === 1 ? 'direct' : 'level';
             console.log("source:", source);
+            
             const walletSettingsData = counter === 1 ? directSettings : levelSettings;
             if (!walletSettingsData) break;
-            console.log("walletSettingsData:", walletSettingsData);
+            
             const uData = await User.findOne({ _id: currentUCode, "accountStatus.activeStatus": 1, "accountStatus.blockStatus": 0 });
             if (!uData || !currentUCode) continue;
             const sponsorUCode = uData.uSponsor;
+            
             if (!sponsorUCode) break;
             const sData = await User.findOne({ _id: sponsorUCode, "accountStatus.activeStatus": 1, "accountStatus.blockStatus": 0 });
             if (!sData) break;
             currentUCode = sData._id;
-            console.log("sData:", sData);
+            
             const remainingCapping = await common.getTotalUserCappingStatus(currentUCode);
-            console.log("remainingCapping:", remainingCapping);
+            
             if (remainingCapping === 0) continue;
 
             let payable = (parseFloat(plan.value[counter - 1]) * amount) / 100;
@@ -195,17 +198,15 @@ async function level(uCode, amount, level = 1) {
                     txCharge: 0,
                     currentWalletBalance,
                     postWalletBalance,
-                    remark: `${walletSettingsData.name} of ${payable} generated from ${txUData.username}`,
+                    remark: `${walletSettingsData.name} of $  ${payable} generated from ${txUData.username}`,
                     response: counter,
                     status: 1
                 });
 
-                walletUpdates.push(
-                    common.manageWalletAmounts(currentUCode, source, payable),
-                    walletSettingsData.wallet && common.manageWalletAmounts(currentUCode, walletSettingsData.wallet, payable * 0.25),
-                    common.manageWalletAmounts(currentUCode, 'weekly_pool', payable * 0.45),
-                    common.manageWalletAmounts(currentUCode, 'monthly_pool', payable * 0.30)
-                );
+                // walletUpdates.push(
+                //     common.manageWalletAmounts(currentUCode, source, payable),
+                //     walletSettingsData.wallet && common.manageWalletAmounts(currentUCode, walletSettingsData.wallet, payable)
+                // );
             }
         }
 
@@ -281,7 +282,38 @@ async function roi_level_commission(uCode, amount, level = 25) {
     }
 }
 
+async function resetWeeklyMonthlyPool() {
+    try {
+        const usersData = await User.find({ "accountStatus.activeStatus": 1, "accountStatus.blockStatus": 0 }, '_id');
+        if (!usersData?.length) return;
+        for (let user of usersData) {
+            const uCode = user._id;
+            const remainingCapping = await common.getTotalUserCappingStatus(uCode);
+            if (remainingCapping > 0) continue;
+            const weeklyBalance = await common.getBalance(uCode, 'weekly_pool');
+            const monthlyBalance = await common.getBalance(uCode, 'monthly_pool');
+            await common.manageWalletAmounts(uCode, 'weekly_pool', -weeklyBalance);
+            await common.manageWalletAmounts(uCode, 'monthly_pool', -monthlyBalance);
+        }
+        
+    } catch (e) {
+        console.error(`Error in resetWeeklyMonthlyPool: ${e.message}`);
+    }
+}
+
+
+async function daily_direct() {
+    try {
+        const directTransactions = await IncomeTransaction.find({ txType: 'direct', status: 1 }).lean();
+        console.log(directTransactions.length);
+    } catch (e) {
+        console.error(`Error in daily_direct: ${e.message}`);
+    }
+}
+
 module.exports = {
+    daily_direct,
+    resetWeeklyMonthlyPool,
     roiIncome,
     weeklyDistribution,
     monthlyDistribution,

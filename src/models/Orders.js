@@ -1,10 +1,11 @@
+// src\models\Orders.js
 const mongoose = require('mongoose');
 const { Schema, model } = mongoose;
 
 const ordersSchema = new Schema(
     {
         customerId: { type: Schema.Types.ObjectId, ref: "User" },
-        pinId: { type: Schema.Types.ObjectId, ref: "PinDetails" },
+        pinId: { type: Schema.Types.ObjectId, ref: "PinDetail" },
         activeId: Number,
         txType: String,
         bv: Number,

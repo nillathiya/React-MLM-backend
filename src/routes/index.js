@@ -17,6 +17,7 @@ const contactUsRoutes = require('./contactUs.route.js');
 const companyInfoRoutes = require('./companyInfo.route.js'
 );
 const userSettingRoutes=require('./userSetting.route.js');
+const incomeRoutes=require('./income.route.js');
 
 
 router.use("/api/tickets", ticketRoutes);
@@ -35,6 +36,7 @@ router.use("/api/news-events", newsEventRoutes);
 router.use("/api/contact-us", contactUsRoutes);
 router.use("/api/company-info", companyInfoRoutes);
 router.use("/api/user-settings", userSettingRoutes);
+router.use("/api/income", incomeRoutes);
 
 module.exports = router;
 

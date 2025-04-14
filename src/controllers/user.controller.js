@@ -12,14 +12,15 @@ const team = require('../helpers/team');
 const businessUtils = require('../helpers/businessUtils');
 const mongoose = require('mongoose');
 const envConfig = require('../config/envConfig');
+const transaction = require('../helpers/transaction');
 
 
 // Register a new user
 exports.registerUser = async (req, res, next) => {
-    const { wallet, sponsorUsername } = req.body;
+    const { wallet, sponsorUsername, phoneNumber, hash, email } = req.body;
 
     try {
-        const requiredFields = ["wallet"];
+        const requiredFields = ["wallet","email","phoneNumber","sponsorUsername","hash"];
         const validationResult = await common.requestFieldsValidation(requiredFields, req.body);
 
         if (!validationResult.status) {
@@ -39,6 +40,11 @@ exports.registerUser = async (req, res, next) => {
             }
         }
 
+        const hashResult = await transaction.verify(hash, 1, wallet);
+        let status = hashResult.status === "true" ? 1 : 0;
+        if (status !== 1) {
+            throw new ApiError(400, "Invalid Transaction");
+        }
         // Generate a unique random username
         let username;
         let isUsernameTaken = true;
@@ -49,6 +55,8 @@ exports.registerUser = async (req, res, next) => {
 
         const newUser = await User.create({
             walletAddress: wallet,
+            mobile: phoneNumber,
+            email,
             username: username, // Assign generated username
             uSponsor: sponsorUser ? sponsorUser._id : null,
         });

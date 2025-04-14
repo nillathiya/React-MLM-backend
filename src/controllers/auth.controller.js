@@ -91,6 +91,20 @@ exports.checkWallet = async (req, res, next) => {
     }
 };
 
+exports.checkSponsor = async (req, res, next) => {
+    try {
+        const { sponsor } = req.body;
+        const user = await User.findOne({ username: sponsor });
+        if (user) {
+            return res.status(200).json(new ApiResponse(200, { valid: true, activeStatus: user.activeStatus }, "check Sponsor successfully"))
+        } else {
+            throw new ApiError(404, "sponsor not found")
+        }
+    } catch (error) {   
+        next(error)
+    }
+};
+
 // exports.frenchiseUserLogin = async (req, res) => {
 //     const { username, password } = req.body;
 

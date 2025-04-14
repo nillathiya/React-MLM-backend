@@ -5,6 +5,9 @@ const transaction = {};
 
 transaction.verify = async (txHash, amount, userAddress) => {
     try {
+        // console.log("txHash", txHash);
+        // console.log("amount", amount);
+        // console.log("userAddress", userAddress);
         const companyBSCAddress = await CompanyInfo.findOne({label: 'companyBSCAddress'});
         const apiUrl = "https://web3check.companywebsite.in/verifybsc";
         const requestData = {
