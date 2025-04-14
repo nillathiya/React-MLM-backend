@@ -635,7 +635,7 @@ exports.getAllIncomeTransactions = async (req, res, next) => {
         }
         const status = postData.status;
         const txType = postData.txType;
-
+        const source = postData.source;
 
         const query = {};
         if (status !== undefined) {
@@ -643,6 +643,9 @@ exports.getAllIncomeTransactions = async (req, res, next) => {
         }
         if (txType !== "all") {
             query.txType = txType;
+        }
+        if (source !== undefined) {
+            query.source = source;
         }
         const allTransactions = await IncomeTransaction.find(query)
             .populate("txUCode", "username name")
