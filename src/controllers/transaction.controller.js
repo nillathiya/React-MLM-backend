@@ -6,7 +6,7 @@ const envConfig = require('../config/envConfig');
 const common = require('../helpers/common');
 const { User, Transaction, FundTransaction, IncomeTransaction, WalletSettings, Wallet } = require('../models/DB');
 const transactionHelper = require('../helpers/transaction');
-
+const mongoose = require('mongoose');
 
 exports.getAllTransactions = async (req, res, next) => {
     try {
@@ -605,13 +605,20 @@ exports.getUserIncomeTransactions = async (req, res, next) => {
     const { source } = req.query;
     const vsuser = req.user;
     try {
-        const filter = { uCode: vsuser?._id };
+
+        const filter = { uCode: new mongoose.Types.ObjectId(vsuser?._id) };
         if (source) filter.source = source;
+
+        console.log("filter", filter)
 
         const incomeTransactions = await IncomeTransaction.find(filter)
             .sort({ _id: 1 })
+            .populate("txUCode", "username name")
+            .populate("uCode", "username name")
             .lean();
 
+
+        console.log("incomeTransactions", incomeTransactions);
         const encryptedIncomeTransaction = CryptoJS.AES.encrypt(JSON.stringify(incomeTransactions), envConfig.CRYPTO_SECRET_KEY).toString();
         res.status(200).json(new ApiResponse(200, encryptedIncomeTransaction, "Income transactions retrieved successfully"));
     } catch (error) {
