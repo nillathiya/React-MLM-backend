@@ -50,7 +50,7 @@ exports.registerUser = async (req, res, next) => {
         let username;
         let isUsernameTaken = true;
         while (isUsernameTaken) {
-            username = `user_${crypto.randomInt(100000, 999999)}`; // Generate random number
+            username = `BITX${crypto.randomInt(100000, 999999)}`; // Generate random number
             isUsernameTaken = await User.exists({ username }); // Check if exists
         }
 
