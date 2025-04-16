@@ -20,7 +20,7 @@ exports.registerUser = async (req, res, next) => {
     const { wallet, sponsorUsername, phoneNumber, hash, email } = req.body;
 
     try {
-        const requiredFields = ["wallet","email","phoneNumber","sponsorUsername","hash"];
+        const requiredFields = ["wallet", "email", "phoneNumber", "sponsorUsername", "hash"];
         const validationResult = await common.requestFieldsValidation(requiredFields, req.body);
 
         if (!validationResult.status) {
@@ -389,20 +389,29 @@ exports.updateUserProfile = async (req, res, next) => {
             const salt = await bcrypt.genSalt(10);
             updateFields.password = await bcrypt.hash(req.body.password, salt);
         }
-        // Ensure rank is only updated if it's different
+        // Rank update
         if (req.body.rank !== undefined) {
             const newRank = Number(req.body.rank);
-            if (req.user.myRank !== newRank) {
+            if (isNaN(newRank) || newRank < 0) {
+                throw new ApiError(400, "Invalid rank value");
+            }
+            if (req.user?.myRank !== newRank) {
                 updateFields.myRank = newRank;
             }
         }
-
         if (req.file) {
             updateFields.profilePicture = `/uploads/${req.file.filename}`;
         }
+        // Wallet address validation
+        if (req.body.walletAddress) {
+            const user = await User.findOne({ walletAddress: req.body.walletAddress });
+            if (user && user._id.toString() !== userId) {
+                throw new ApiError(400, "Wallet address already in use");
+            }
+        }
 
         // Ensure only provided fields are updated
-        const user = await User.findByIdAndUpdate(userId, { $set: updateFields }, { new: true });
+        const user = await User.findByIdAndUpdate(userId, { $set: updateFields }, { new: true, select: "-password" });
 
         if (!user) {
             throw new ApiError(404, "User not found");
@@ -430,6 +439,17 @@ exports.getUserById = async (req, res, next) => {
     }
 }
 
+exports.getUserRemainingCapping = async (req, res, next) => {
+    try {
+        if (!req.user) {
+            throw new ApiError(403, "Unauthorized access");
+        }
+        const rcap = await common.getTotalUserCappingStatus(req.user._id);
+        res.status(200).json(new ApiResponse(200, rcap, "User capping get successfully"));
+    } catch (error) {
+        next(error)
+    }
+}
 // // Delete user
 // exports.deleteUser = async (req, res) => {
 //     try {
