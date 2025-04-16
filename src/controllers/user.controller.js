@@ -13,6 +13,7 @@ const businessUtils = require('../helpers/businessUtils');
 const mongoose = require('mongoose');
 const envConfig = require('../config/envConfig');
 const transaction = require('../helpers/transaction');
+const Wallet = require('../models/Wallet');
 
 
 // Register a new user
@@ -60,6 +61,8 @@ exports.registerUser = async (req, res, next) => {
             username: username, // Assign generated username
             uSponsor: sponsorUser ? sponsorUser._id : null,
         });
+
+        await Wallet.create({ uCode: newUser._id });
 
         res.status(201).json(new ApiResponse(200, { userId: newUser._id, username: username }, "User registered successfully"));
 

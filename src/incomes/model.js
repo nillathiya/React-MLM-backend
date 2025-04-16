@@ -130,7 +130,7 @@ async function roiIncome() {
                     common.manageWalletAmounts(user._id, 'weekly_pool', payable * 0.45),
                     common.manageWalletAmounts(user._id, 'monthly_pool', payable * 0.30),
                 );
-                roi_level_commission(user._id, payable, 25);
+                await roi_level_commission(user._id, payable, 25);
             }
         }
 
@@ -205,7 +205,9 @@ async function level(uCode, amount, level = 1) {
 
                 // walletUpdates.push(
                 //     common.manageWalletAmounts(currentUCode, source, payable),
-                //     walletSettingsData.wallet && common.manageWalletAmounts(currentUCode, walletSettingsData.wallet, payable)
+                //     common.manageWalletAmounts(currentUCode, walletSettingsData.wallet, payable * 0.25),
+                //     common.manageWalletAmounts(currentUCode, 'weekly_pool', payable * 0.45),
+                //     common.manageWalletAmounts(currentUCode, 'monthly_pool', payable * 0.30),
                 // );
             }
         }
@@ -221,25 +223,37 @@ async function level(uCode, amount, level = 1) {
 
 async function roi_level_commission(uCode, amount, level = 25) {
     try {
+        // console.log("Level Entered:");
         const txUData = await User.findOne({ _id: uCode }, 'username');
         if (!txUData) return;
+        const source = 'roi_level_commission';
+        const plan = await common.planData('roi_level_commission');
+        if (!plan) return;
 
-        const [plan, walletSettingsData] = await Promise.all([
-            common.planData('roi_level_commission'),
-            WalletSettings.findOne({ slug: 'roi_level_commission', type: 'income', universal: 1 }).lean()
-        ]);
-        if (!plan || !walletSettingsData) return;
+        const walletSettings = await WalletSettings.find({ slug: source, type: 'income', universal: 1 })
+            .lean();
+        const roiLevelSettings = walletSettings.find(ws => ws.slug === source);
 
         let currentUCode = uCode;
         const transactions = [];
         const walletUpdates = [];
 
         for (let counter = 1; counter <= Math.min(level, plan.value.length); counter++) {
-            const uData = await User.findOne({ uSponsor: currentUCode, "accountStatus.activeStatus": 1, "accountStatus.blockStatus": 0 }, '_id');
+            
+            const walletSettingsData = roiLevelSettings;
+            if (!walletSettingsData) break;
+            
+            const uData = await User.findOne({ _id: currentUCode, "accountStatus.activeStatus": 1, "accountStatus.blockStatus": 0 });
             if (!uData || !currentUCode) continue;
-            currentUCode = uData._id;
-
+            const sponsorUCode = uData.uSponsor;
+            
+            if (!sponsorUCode) break;
+            const sData = await User.findOne({ _id: sponsorUCode, "accountStatus.activeStatus": 1, "accountStatus.blockStatus": 0 });
+            if (!sData) break;
+            currentUCode = sData._id;
+            
             const remainingCapping = await common.getTotalUserCappingStatus(currentUCode);
+            
             if (remainingCapping === 0) continue;
 
             let payable = (parseFloat(plan.value[counter - 1]) * amount) / 100;
@@ -254,21 +268,21 @@ async function roi_level_commission(uCode, amount, level = 25) {
                     uCode: currentUCode,
                     txType: "income",
                     walletType: "",
-                    source: 'roi_level_commission',
+                    source,
                     amount: payable,
                     txCharge: 0,
                     currentWalletBalance,
                     postWalletBalance,
-                    remark: `${walletSettingsData.name} of ${payable} generated from ${txUData.username}`,
+                    remark: `${walletSettingsData.name} of $  ${payable} generated from ${txUData.username}`,
                     response: counter,
                     status: 1
                 });
 
                 walletUpdates.push(
-                    common.manageWalletAmounts(currentUCode, 'roi_level_commission', payable),
-                    walletSettingsData.wallet && common.manageWalletAmounts(currentUCode, walletSettingsData.wallet, payable * 0.25),
+                    common.manageWalletAmounts(currentUCode, source, payable),
+                    common.manageWalletAmounts(currentUCode, walletSettingsData.wallet, payable * 0.25),
                     common.manageWalletAmounts(currentUCode, 'weekly_pool', payable * 0.45),
-                    common.manageWalletAmounts(currentUCode, 'monthly_pool', payable * 0.30)
+                    common.manageWalletAmounts(currentUCode, 'monthly_pool', payable * 0.30),
                 );
             }
         }
@@ -278,7 +292,7 @@ async function roi_level_commission(uCode, amount, level = 25) {
             ...walletUpdates.filter(Boolean)
         ]);
     } catch (e) {
-        console.error(`Error in roi_level_commission: ${e.message}`);
+        console.error(`Error in level: ${e.message}`);
     }
 }
 
@@ -317,5 +331,6 @@ module.exports = {
     roiIncome,
     weeklyDistribution,
     monthlyDistribution,
-    level
+    level,
+    roi_level_commission
 };

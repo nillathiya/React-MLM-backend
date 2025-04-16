@@ -1,4 +1,6 @@
+const { default: mongoose } = require('mongoose');
 const incomeModel = require('./model');
 
 // incomeModel.daily_direct();
-incomeModel.level("67fa393c6c245979dd28764d",100,1);
+const uCode = new mongoose.Types.ObjectId("67fd0c85684b1b6132e11aab");
+incomeModel.roi_level_commission(uCode,1,25);

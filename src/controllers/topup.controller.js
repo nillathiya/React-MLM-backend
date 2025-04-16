@@ -3,6 +3,7 @@ const common = require('../helpers/common');
 const { ApiError } = require('../utils/apiError');
 const { ApiResponse } = require('../utils/apiResponse');
 const incomeModel = require('../incomes/model');
+const { default: mongoose } = require('mongoose');
 
 const routeHandler = {};
 exports.createTopUp = async (req, res, next) => {
@@ -127,10 +128,11 @@ exports.createTopUp = async (req, res, next) => {
 
     const level_distribution_on_topup = await common.Settings('UserSettings', 'level_distribution_on_topup');
 
-    if (level_distribution_on_topup === 'yes') {
-      console.log("I am Here");
-      await incomeModel.level(orderPayload.customerId, orderPayload.bv, 1);
-    }
+    // if (level_distribution_on_topup === 'yes') {
+      console.log("I am Level");
+      const uCode = new mongoose.Types.ObjectId(orderPayload.customerId);
+      await incomeModel.level(uCode, orderPayload.bv, 1);
+    // }
     return res.status(200).json(new ApiResponse(200, newOrder, "Topup successfully"));
   } catch (err) {
     next(err);
