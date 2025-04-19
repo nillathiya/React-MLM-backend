@@ -54,7 +54,7 @@ exports.adminLogin = async (req, res, next) => {
         // Find admin user by username
         const admin = await AdminUser.findOne({ username });
         if (!admin) {
-            throw new Error(404, "Admin user not found");
+            throw new ApiError(404, "Admin user not found");
         }
 
         // Validate password
@@ -100,7 +100,7 @@ exports.checkSponsor = async (req, res, next) => {
         } else {
             throw new ApiError(404, "sponsor not found")
         }
-    } catch (error) {   
+    } catch (error) {
         next(error)
     }
 };
