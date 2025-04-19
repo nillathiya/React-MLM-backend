@@ -136,5 +136,5 @@ userSchema.methods.generateAccessToken = function () {
     );
 };
 
-userSchema.index({ name: 1, email: 1, username: 1 });
+userSchema.index({ _id: 1, uSponsor: 1 });
 module.exports = mongoose.model("User", userSchema);
