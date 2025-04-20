@@ -18,7 +18,7 @@ const Wallet = require('../models/Wallet');
 
 // Register a new user
 exports.registerUser = async (req, res, next) => {
-    const { wallet, sponsorUsername, phoneNumber, hash, email } = req.body;
+    const { wallet, name, sponsorUsername, phoneNumber, hash, email } = req.body;
 
     try {
         const requiredFields = ["wallet", "email", "phoneNumber", "sponsorUsername", "hash"];
@@ -58,6 +58,7 @@ exports.registerUser = async (req, res, next) => {
             walletAddress: wallet,
             mobile: phoneNumber,
             email,
+            name,
             username: username, // Assign generated username
             uSponsor: sponsorUser ? sponsorUser._id : null,
         });

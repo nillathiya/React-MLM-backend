@@ -24,9 +24,9 @@
         "countryCode": "91"
       },
       "accountStatus": {
+        "activeId": 0,
         "activeStatus": 1,
-        "blockStatus": 0,
-        "activeId": 0
+        "blockStatus": 0
       },
       "role": 2,
       "status": 1,
@@ -508,6 +508,7 @@
       },
       "pinType": "package",
       "pinRate": 100,
+      "pinRate2": 999999,
       "roi": 1,
       "status": 1,
       "createdAt": "2025-02-22T10:43:17.871Z",
@@ -2074,7 +2075,15 @@
         "friday",
         "saturday"
       ],
-      "value": "[\"monday\",\"tuesday\",\"wednesday\",\"thursday\"]",
+      "value": [
+        "sunday",
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday"
+      ],
       "type": "singular_array",
       "status": 1,
       "adminStatus": 1,

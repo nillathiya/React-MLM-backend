@@ -210,27 +210,9 @@ common.companyInfo = async (label) => {
 
 common.getTotalUserCappingStatus = async (uCode) => {
   try {
-    const activeIncomes = await WalletSettings.find({ type: "income", universal: 1 });
-    if (!activeIncomes || activeIncomes.length === 0) {
-      return 0;
-    }
-    // console.log('activeIncomes:',activeIncomes);
-
-    const balancePromises = activeIncomes.map(async (income) => {
-      return await common.getBalance(uCode, income.slug);
-    });
-
-    const balances = await Promise.all(balancePromises);
-    
-    const totalBalance = balances.reduce((sum, balance) => sum + (Number(balance) || 0), 0);
-    
-    const myPackage = await businessUtils.myPackage(uCode);
-    
+    const totalBalance = await common.getBalance(uCode, "capping");
     const cappingMultiplier = 2;
-
     const totalCap = myPackage * cappingMultiplier;
-    
-
     if (totalBalance > totalCap) {
       return 0;
     }

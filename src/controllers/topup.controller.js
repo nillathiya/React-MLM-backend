@@ -35,7 +35,11 @@ exports.createTopUp = async (req, res, next) => {
     if (!receiverUser) {
       throw new ApiError(400, "Receiver user not found");
     }
-    if (amount < pinDetail.pinRate || amount > pinDetail.pinRate) {
+    console.log("pinDetail", pinDetail);
+    if (amount <= pinDetail.pinRate2) console.log("pinrate2 ok");
+    if (amount >= pinDetail.pinRate) console.log("pinRate ok");
+    if (amount >= pinDetail.pinRate2 && amount < pinDetail.pinRate) {
+      console.log("amount", amount, "pinDetail pinRate:",pinDetail.pinRate, "pinDetail pinrate2:",pinDetail.pinRate2);
       throw new ApiError(400, `Top-up amount should be equal to ${pinDetail.pinRate}`);
     }
 

@@ -12,6 +12,8 @@ const { errorMiddleware } = require('./middlewares/error.middleware');
 const cors = require("cors");
 const envConfig = require("./config/envConfig");
 
+// 
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -54,6 +56,9 @@ app.use("/uploads", express.static(path.join(__dirname, "../public/uploads")));
 connectDB();
 // API Routes
 app.use(routes);
+
+// incomr crons import and start if connectDB is successful add error handling if any
+require("./incomes/cron");
 
 // Error handling middleware
 app.use(handleFileUploadError);
