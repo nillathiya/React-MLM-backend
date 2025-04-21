@@ -85,6 +85,8 @@ async function roiIncome() {
 
         if (!ordersData?.length) return;
 
+
+
         const [walletSettingsData] = await Promise.all([
             WalletSettings.findOne({ slug: 'roi', type: 'income', universal: 1 })
         ]);
@@ -128,7 +130,7 @@ async function roiIncome() {
                     response: _id.toString(),
                     status: 1
                 });
-
+                console.log("Payable:", payable, "User:", user._id, "Wallet:", walletSettingsData.wallet, "Post Wallet Balance:", postWalletBalance);
                 walletUpdates.push(
                     common.manageWalletAmounts(user._id, 'roi', payable),
                     common.manageWalletAmounts(user._id, walletSettingsData.wallet, payable * 0.25),

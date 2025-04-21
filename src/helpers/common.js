@@ -212,6 +212,10 @@ common.getTotalUserCappingStatus = async (uCode) => {
   try {
     const totalBalance = await common.getBalance(uCode, "capping");
     const cappingMultiplier = 2;
+    const myPackage = await businessUtils.myPackage(uCode);
+    if (!myPackage) {
+      return 0;
+    }
     const totalCap = myPackage * cappingMultiplier;
     if (totalBalance > totalCap) {
       return 0;
