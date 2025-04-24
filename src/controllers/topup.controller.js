@@ -22,11 +22,21 @@ exports.createTopUp = async (req, res, next) => {
       throw new ApiError(400, `Missing fields: ${response.missingFields.join(", ")}`)
     }
 
-    // Fetch pin and user details
-    const [pinDetail, receiverUser] = await Promise.all([
-      PinDetail.findById(pinId),
-      User.findOne({ username }),
-    ]);
+    // fetch pinDetails with amount greater than pinRate and less than pinRate2
+    const pinDetail = await PinDetail.findOne({ _id: pinId, pinRate: { $lte: amount }, pinRate2: { $gte: amount } });
+
+    // find Api UserData
+    const apiUserData = await User.findOne({_id: vsuser._id});
+
+    if (!apiUserData) {
+      throw new ApiError(400, "User not found");    
+    }
+
+    // find user that will topup
+    const receiverUser = await User.findOne({ username: username });
+    if (!receiverUser) {
+      throw new ApiError(400, "TopUp user not found");
+    }
 
     if (!pinDetail) {
       throw new ApiError(400, "Pin not found");
@@ -46,7 +56,7 @@ exports.createTopUp = async (req, res, next) => {
     const walletType = await common.Settings("usersettings", "topup_fund_wallet");
     // console.log("walletType",walletType);
     const currentBalance = await common.getBalance(
-      vsuser._id,
+      apiUserData._id,
       walletType
     );
 
@@ -54,28 +64,7 @@ exports.createTopUp = async (req, res, next) => {
       throw new ApiError(400, "Insufficient wallet balance");
     }
 
-    if (receiverUser._id === vsuser._id) {
-      // Perform transactions
-      const [senderTransaction] = await Promise.all([
-        common.manageWalletAmounts(vsuser._id, walletType, -amount),
-      ]);
-
-      if (!senderTransaction.status) {
-        throw new ApiError(400, senderTransaction.message || "Transaction failed");
-      }
-    } else {
-      // Perform transactions
-      const [senderTransaction, receiverTransaction] = await Promise.all([
-        common.manageWalletAmounts(vsuser._id, walletType, -amount),
-        common.manageWalletAmounts(receiverUser._id, walletType, amount),
-      ]);
-
-      if (!senderTransaction.status || !receiverTransaction.status) {
-        throw new ApiError(400, senderTransaction.message ||
-          receiverTransaction.message ||
-          "Transaction failed");
-      }
-    }
+    
 
     // Prepare and save order
     // const lastOrder = await Orders.findOne({ customerId: vsuser._id }).sort({
@@ -84,10 +73,21 @@ exports.createTopUp = async (req, res, next) => {
     const allUsers = await User.find({ "accountStatus.activeStatus": 1 }).select("accountStatus.activeId");
     const maxActiveId = Math.max(...allUsers.map(user => user.accountStatus.activeId));
     const newActiveId = maxActiveId + 1;
-
+    try {
+      const walletTransaction = await common.manageWalletAmounts(
+        apiUserData._id,
+        walletType,
+        -amount
+      );
+      if (!walletTransaction.status) {
+        throw new ApiError(400, walletTransaction.message);
+      }
+    } catch (err) {
+      throw new ApiError(400, err.message || err);
+    }
 
     const orderPayload = {
-      customerId: vsuser._id,
+      customerId: receiverUser._id,
       pinId,
       bv: amount,
       amount,
@@ -104,8 +104,8 @@ exports.createTopUp = async (req, res, next) => {
 
     // Save transaction record
     const transactionPayload = {
-      uCode: vsuser._id,
-      txUCode: vsuser._id === receiverUser._id ? null : receiverUser._id,
+      uCode: receiverUser._id,
+      txUCode: vsuser._id,
       txType: txType === "purchase" ? "topup" : "retopup",
       debitCredit: "DEBIT",
       walletType,
@@ -130,12 +130,10 @@ exports.createTopUp = async (req, res, next) => {
       await User.updateOne({ _id: receiverUser._id }, { $set: { "accountStatus.activeStatus": 1, "accountStatus.activeId": newActiveId } });
     }
 
-    const level_distribution_on_topup = await common.Settings('UserSettings', 'level_distribution_on_topup');
-
     // if (level_distribution_on_topup === 'yes') {
       console.log("I am Level");
       const uCode = new mongoose.Types.ObjectId(orderPayload.customerId);
-      await incomeModel.level(uCode, orderPayload.bv, 1);
+      await incomeModel.level(receiverUser._id, orderPayload.bv, 1);
     // }
     return res.status(200).json(new ApiResponse(200, newOrder, "Topup successfully"));
   } catch (err) {

@@ -5,11 +5,11 @@
         "$oid": "67bfeebc40efe9cb102c6654"
       },
       "uSponsor": null,
-      "name": "username",
-      "email": "krish@gmail.com",
+      "name": "bitx",
+      "email": "user@bitx.com",
       "password": "$2a$10$1AujVWwz61ZwFMrcbp8YvOJgDhX2XmoQ5wqjOBCTnItmJ5hxgQFNW",
-      "mobile": "8140205170",
-      "username": "user_394845",
+      "mobile": "1231231231",
+      "username": "BITX",
       "dob": "2025-02-28T00:00:00.000Z",
       "gender": "male",
       "profilePicture": "/uploads/2025-03-05_659371a0-254d-4c46-a31d-78353056b6f5_about.jpg",
@@ -33,6 +33,7 @@
       "walletAddress": "0x6e172756dB77a6d687BB66E5ABE5C8d3EB33D15f",
       "withdrawStatus": 1,
       "kycStatus": 2,
+      "specialStatus": 0,
       "position": 0,
       "accessLevel": [],
       "myRank": 1,
@@ -117,6 +118,122 @@
   "WalletSettings": [
     {
       "_id": {
+        "$oid": "67138d065c993ad5cf266114"
+      },
+      "slug": "right_team",
+      "name": "Right Team",
+      "wallet": "",
+      "column": "c9",
+      "type": "team",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 0,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:42:14.261Z",
+      "updatedAt": "2024-10-19T10:43:30.710Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67138e085c993ad5cf26613a"
+      },
+      "slug": "matching",
+      "name": "Matched PV",
+      "column": "c14",
+      "type": "team",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 0,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:46:32.869Z",
+      "updatedAt": "2024-10-19T10:46:32.869Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67138ce85c993ad5cf26610c"
+      },
+      "slug": "left_team",
+      "name": "Left Team",
+      "wallet": "",
+      "column": "c8",
+      "type": "team",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 0,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:41:44.151Z",
+      "updatedAt": "2024-10-19T10:41:44.151Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67138d9d5c993ad5cf266132"
+      },
+      "slug": "total_withdrawal",
+      "name": "Total Withdrawal",
+      "wallet": "",
+      "column": "c12",
+      "type": "withdrawal",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 0,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:44:45.992Z",
+      "updatedAt": "2024-10-19T10:44:45.992Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67138e2e5c993ad5cf266142"
+      },
+      "slug": "single_leg_team",
+      "name": "Single Leg team",
+      "column": "c16",
+      "type": "team",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 0,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:47:10.588Z",
+      "updatedAt": "2024-10-19T10:47:10.588Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67e84cc8502bd5da3062c812"
+      },
+      "slug": "roi",
+      "name": "Daily Bonus",
+      "wallet": "instant_pool",
+      "column": "c30",
+      "type": "income",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 1,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:49:22.497Z",
+      "updatedAt": "2024-10-19T10:49:22.497Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67138d465c993ad5cf26611a"
+      },
+      "slug": "total_pins",
+      "name": "Total Pins",
+      "column": "c10",
+      "type": "pin",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 0,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:43:18.924Z",
+      "updatedAt": "2024-10-19T10:43:37.849Z",
+      "__v": 0
+    },
+    {
+      "_id": {
         "$oid": "671389b0c6db46f3557d5a28"
       },
       "slug": "main_wallet",
@@ -130,6 +247,106 @@
       "singleLeg": 0,
       "createdAt": "2024-10-19T10:28:00.658Z",
       "updatedAt": "2024-10-19T10:30:07.934Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67138db75c993ad5cf266136"
+      },
+      "slug": "total_payout",
+      "name": "Total Payout",
+      "column": "c13",
+      "type": "payout",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 0,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:45:11.905Z",
+      "updatedAt": "2024-10-19T10:45:11.905Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67138e195c993ad5cf26613e"
+      },
+      "slug": "carry",
+      "name": "Carry PV",
+      "column": "c15",
+      "type": "team",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 0,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:46:49.837Z",
+      "updatedAt": "2024-10-19T10:46:49.837Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67138c1d5c993ad5cf2660e8"
+      },
+      "slug": "active_directs",
+      "name": "Active Directs",
+      "wallet": "",
+      "column": "c4",
+      "type": "team",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 0,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:38:21.018Z",
+      "updatedAt": "2024-10-19T10:38:21.018Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67138e6d5c993ad5cf26614d"
+      },
+      "slug": "direct",
+      "name": "Direct Bonus",
+      "wallet": "main_wallet",
+      "column": "c17",
+      "type": "income",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 1,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:48:13.211Z",
+      "updatedAt": "2024-10-19T10:48:28.079Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67e85d1c502bd5da3062c815"
+      },
+      "slug": "monthly_pool",
+      "name": "Monthly Pool",
+      "wallet": "",
+      "column": "c39",
+      "type": "wallet",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 1,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:49:22.497Z",
+      "updatedAt": "2024-10-19T10:49:22.497Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "680755b0a8ea177c4c7ac417"
+      },
+      "slug": "capping",
+      "name": "Capping",
+      "wallet": "",
+      "column": "c25",
+      "type": "cap",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 0,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:38:21.018Z",
+      "updatedAt": "2024-10-19T10:38:21.018Z",
       "__v": 0
     },
     {
@@ -151,36 +368,19 @@
     },
     {
       "_id": {
-        "$oid": "67138c085c993ad5cf2660e4"
+        "$oid": "67e85dcc502bd5da3062c817"
       },
-      "slug": "total_directs",
-      "name": "Total Directs",
+      "slug": "instant_pool",
+      "name": "Instant Pool",
       "wallet": "",
-      "column": "c3",
-      "type": "team",
+      "column": "c38",
+      "type": "wallet",
       "binary": 0,
       "matrix": 0,
-      "universal": 0,
+      "universal": 1,
       "singleLeg": 0,
-      "createdAt": "2024-10-19T10:38:00.164Z",
-      "updatedAt": "2024-10-19T10:38:00.164Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67138c1d5c993ad5cf2660e8"
-      },
-      "slug": "active_directs",
-      "name": "Active Directs",
-      "wallet": "",
-      "column": "c4",
-      "type": "team",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 0,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:38:21.018Z",
-      "updatedAt": "2024-10-19T10:38:21.018Z",
+      "createdAt": "2024-10-19T10:49:22.497Z",
+      "updatedAt": "2024-10-19T10:49:22.497Z",
       "__v": 0
     },
     {
@@ -235,56 +435,6 @@
     },
     {
       "_id": {
-        "$oid": "67138ce85c993ad5cf26610c"
-      },
-      "slug": "left_team",
-      "name": "Left Team",
-      "wallet": "",
-      "column": "c8",
-      "type": "team",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 0,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:41:44.151Z",
-      "updatedAt": "2024-10-19T10:41:44.151Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67138d065c993ad5cf266114"
-      },
-      "slug": "right_team",
-      "name": "Right Team",
-      "wallet": "",
-      "column": "c9",
-      "type": "team",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 0,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:42:14.261Z",
-      "updatedAt": "2024-10-19T10:43:30.710Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67138d465c993ad5cf26611a"
-      },
-      "slug": "total_pins",
-      "name": "Total Pins",
-      "column": "c10",
-      "type": "pin",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 0,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:43:18.924Z",
-      "updatedAt": "2024-10-19T10:43:37.849Z",
-      "__v": 0
-    },
-    {
-      "_id": {
         "$oid": "67138d7d5c993ad5cf26612e"
       },
       "slug": "unused_pins",
@@ -297,121 +447,6 @@
       "singleLeg": 0,
       "createdAt": "2024-10-19T10:44:13.211Z",
       "updatedAt": "2024-10-19T10:44:13.211Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67138d9d5c993ad5cf266132"
-      },
-      "slug": "total_withdrawal",
-      "name": "Total Withdrawal",
-      "wallet": "",
-      "column": "c12",
-      "type": "withdrawal",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 0,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:44:45.992Z",
-      "updatedAt": "2024-10-19T10:44:45.992Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67138db75c993ad5cf266136"
-      },
-      "slug": "total_payout",
-      "name": "Total Payout",
-      "column": "c13",
-      "type": "payout",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 0,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:45:11.905Z",
-      "updatedAt": "2024-10-19T10:45:11.905Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67138e085c993ad5cf26613a"
-      },
-      "slug": "matching",
-      "name": "Matched PV",
-      "column": "c14",
-      "type": "team",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 0,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:46:32.869Z",
-      "updatedAt": "2024-10-19T10:46:32.869Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67138e195c993ad5cf26613e"
-      },
-      "slug": "carry",
-      "name": "Carry PV",
-      "column": "c15",
-      "type": "team",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 0,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:46:49.837Z",
-      "updatedAt": "2024-10-19T10:46:49.837Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67138e2e5c993ad5cf266142"
-      },
-      "slug": "single_leg_team",
-      "name": "Single Leg team",
-      "column": "c16",
-      "type": "team",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 0,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:47:10.588Z",
-      "updatedAt": "2024-10-19T10:47:10.588Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67138e6d5c993ad5cf26614d"
-      },
-      "slug": "direct",
-      "name": "Direct Bonus",
-      "wallet": "main_wallet",
-      "column": "c17",
-      "type": "income",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 1,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:48:13.211Z",
-      "updatedAt": "2024-10-19T10:48:28.079Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67138eb25c993ad5cf266166"
-      },
-      "slug": "level",
-      "name": "Level Bonus",
-      "wallet": "main_wallet",
-      "column": "c18",
-      "type": "income",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 1,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:49:22.497Z",
-      "updatedAt": "2024-10-19T10:49:22.497Z",
       "__v": 0
     },
     {
@@ -433,23 +468,6 @@
     },
     {
       "_id": {
-        "$oid": "67e84cc8502bd5da3062c812"
-      },
-      "slug": "roi",
-      "name": "Daily Bonus",
-      "wallet": "instant_pool",
-      "column": "c30",
-      "type": "income",
-      "binary": 0,
-      "matrix": 0,
-      "universal": 1,
-      "singleLeg": 0,
-      "createdAt": "2024-10-19T10:49:22.497Z",
-      "updatedAt": "2024-10-19T10:49:22.497Z",
-      "__v": 0
-    },
-    {
-      "_id": {
         "$oid": "67e85a03502bd5da3062c814"
       },
       "slug": "weekly_pool",
@@ -467,13 +485,30 @@
     },
     {
       "_id": {
-        "$oid": "67e85d1c502bd5da3062c815"
+        "$oid": "67138c085c993ad5cf2660e4"
       },
-      "slug": "monthly_pool",
-      "name": "Monthly Pool",
+      "slug": "total_directs",
+      "name": "Total Directs",
       "wallet": "",
-      "column": "c39",
-      "type": "wallet",
+      "column": "c3",
+      "type": "team",
+      "binary": 0,
+      "matrix": 0,
+      "universal": 0,
+      "singleLeg": 0,
+      "createdAt": "2024-10-19T10:38:00.164Z",
+      "updatedAt": "2024-10-19T10:38:00.164Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67138eb25c993ad5cf266166"
+      },
+      "slug": "level",
+      "name": "Level Bonus",
+      "wallet": "main_wallet",
+      "column": "c18",
+      "type": "income",
       "binary": 0,
       "matrix": 0,
       "universal": 1,
@@ -484,19 +519,19 @@
     },
     {
       "_id": {
-        "$oid": "67e85dcc502bd5da3062c817"
+        "$oid": "6808a5dfa8ea177c4c7ac44e"
       },
-      "slug": "instant_pool",
-      "name": "Instant Pool",
-      "wallet": "",
-      "column": "c38",
-      "type": "wallet",
+      "slug": "reward",
+      "name": "Reward Bonus",
+      "wallet": "main_wallet",
+      "column": "c37",
+      "type": "income",
       "binary": 0,
       "matrix": 0,
       "universal": 1,
       "singleLeg": 0,
-      "createdAt": "2024-10-19T10:49:22.497Z",
-      "updatedAt": "2024-10-19T10:49:22.497Z",
+      "createdAt": "2024-10-19T10:48:13.211Z",
+      "updatedAt": "2024-10-19T10:48:28.079Z",
       "__v": 0
     }
   ],
@@ -519,20 +554,6 @@
   "AdminSettings": [
     {
       "_id": {
-        "$oid": "6736e95a9d97a1e9257a175a"
-      },
-      "title": "Fund",
-      "name": "Admin transfer with OTP",
-      "slug": "admin_transfer_with_otp",
-      "type": "option",
-      "options": "yes,no",
-      "value": "no",
-      "status": 1,
-      "adminStatus": 1,
-      "__v": 0
-    },
-    {
-      "_id": {
         "$oid": "6736e9a99d97a1e9257a175e"
       },
       "title": "Transactions",
@@ -547,67 +568,42 @@
     },
     {
       "_id": {
-        "$oid": "6736e9e79d97a1e9257a1762"
+        "$oid": "6736ecd29d97a1e9257a1792"
       },
-      "title": "css",
-      "name": "Table Classes",
-      "slug": "table_classes",
-      "type": "text",
-      "value": "table table-striped table-hover text-center",
+      "title": "Earning",
+      "name": "Earning Type",
+      "slug": "earning_type",
+      "type": "option",
+      "options": "payout,withdrawal",
+      "value": "withdrawal",
       "status": 1,
       "adminStatus": 0,
       "__v": 0
     },
     {
       "_id": {
-        "$oid": "6736ea3b9d97a1e9257a1766"
-      },
-      "title": "Matrix",
-      "name": "No of nodes",
-      "slug": "matrix_node",
-      "type": "text",
-      "value": "4",
-      "status": 1,
-      "adminStatus": 0,
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "6736ea809d97a1e9257a176a"
+        "$oid": "6736ed5c9d97a1e9257a179a"
       },
       "title": "Withdrawal",
-      "name": "Withdrawal Start-time",
-      "slug": "wd_start_time",
-      "type": "text",
-      "options": "fix",
-      "value": "10:00",
+      "name": "withdrawals mode of payment",
+      "slug": "withdrawals_mode",
+      "type": "array",
+      "options": "{\"in_bank\":\"Bank\",\"in_upi\":\"UPI\",\"in_cripto\":\"Cryp...",
+      "value": "in_bank",
       "status": 1,
       "adminStatus": 0,
       "__v": 0
     },
     {
       "_id": {
-        "$oid": "6736eab49d97a1e9257a176e"
+        "$oid": "6736ed109d97a1e9257a1796"
       },
-      "title": "Withdrawal",
-      "name": "Withdrawal End-time",
-      "slug": "wd_end_time",
-      "type": "text",
-      "options": "fix",
-      "value": "17:00",
-      "status": 1,
-      "adminStatus": 1,
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "6736eae49d97a1e9257a1772"
-      },
-      "title": "Matrix",
-      "name": "No of matrix level showing",
-      "slug": "show_matrix_level",
-      "type": "text",
-      "value": "2",
+      "title": "Payment",
+      "name": "Withdrawal",
+      "slug": "btc_withdrawal",
+      "type": "not_edit",
+      "options": "yes,no",
+      "value": "yes",
       "status": 1,
       "adminStatus": 0,
       "__v": 0
@@ -628,14 +624,68 @@
     },
     {
       "_id": {
-        "$oid": "6736eb6a9d97a1e9257a177a"
+        "$oid": "6736e9e79d97a1e9257a1762"
+      },
+      "title": "css",
+      "name": "Table Classes",
+      "slug": "table_classes",
+      "type": "text",
+      "value": "table table-striped table-hover text-center",
+      "status": 1,
+      "adminStatus": 0,
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "6736eae49d97a1e9257a1772"
+      },
+      "title": "Matrix",
+      "name": "No of matrix level showing",
+      "slug": "show_matrix_level",
+      "type": "text",
+      "value": "2",
+      "status": 1,
+      "adminStatus": 0,
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "6736eab49d97a1e9257a176e"
+      },
+      "title": "Withdrawal",
+      "name": "Withdrawal End-time",
+      "slug": "wd_end_time",
+      "type": "text",
+      "options": "fix",
+      "value": "17:00",
+      "status": 1,
+      "adminStatus": 1,
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "6736ea809d97a1e9257a176a"
+      },
+      "title": "Withdrawal",
+      "name": "Withdrawal Start-time",
+      "slug": "wd_start_time",
+      "type": "text",
+      "options": "fix",
+      "value": "10:00",
+      "status": 1,
+      "adminStatus": 0,
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "6736ec469d97a1e9257a178a"
       },
       "title": "Profile",
-      "name": "Edit bank option",
-      "slug": "edit_bank_enable",
+      "name": "Edit Bank once",
+      "slug": "edit_bank_once",
       "type": "option",
       "options": "yes,no",
-      "value": "yes",
+      "value": "no",
       "status": 1,
       "adminStatus": 0,
       "__v": 0
@@ -647,20 +697,6 @@
       "title": "Profile",
       "name": "Edit Paytm option",
       "slug": "edit_paytm_enable",
-      "type": "option",
-      "options": "yes,no",
-      "value": "no",
-      "status": 1,
-      "adminStatus": 0,
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "6736ebea9d97a1e9257a1782"
-      },
-      "title": "Profile",
-      "name": "Edit BTC option",
-      "slug": "edit_btc_enable",
       "type": "option",
       "options": "yes,no",
       "value": "no",
@@ -684,16 +720,57 @@
     },
     {
       "_id": {
-        "$oid": "6736ec469d97a1e9257a178a"
+        "$oid": "6736ea3b9d97a1e9257a1766"
+      },
+      "title": "Matrix",
+      "name": "No of nodes",
+      "slug": "matrix_node",
+      "type": "text",
+      "value": "4",
+      "status": 1,
+      "adminStatus": 0,
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "6736eb6a9d97a1e9257a177a"
       },
       "title": "Profile",
-      "name": "Edit Bank once",
-      "slug": "edit_bank_once",
+      "name": "Edit bank option",
+      "slug": "edit_bank_enable",
+      "type": "option",
+      "options": "yes,no",
+      "value": "yes",
+      "status": 1,
+      "adminStatus": 0,
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "6736ebea9d97a1e9257a1782"
+      },
+      "title": "Profile",
+      "name": "Edit BTC option",
+      "slug": "edit_btc_enable",
       "type": "option",
       "options": "yes,no",
       "value": "no",
       "status": 1,
       "adminStatus": 0,
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "673dd9b141d22155577db795"
+      },
+      "title": "Matrix",
+      "name": "Type of Matrix",
+      "slug": "matrix_type",
+      "type": "option",
+      "options": "auto,team,both",
+      "value": "team",
+      "status": 1,
+      "adminStatus": 1,
       "__v": 0
     },
     {
@@ -712,56 +789,14 @@
     },
     {
       "_id": {
-        "$oid": "6736ecd29d97a1e9257a1792"
+        "$oid": "6736e95a9d97a1e9257a175a"
       },
-      "title": "Earning",
-      "name": "Earning Type",
-      "slug": "earning_type",
+      "title": "Fund",
+      "name": "Admin transfer with OTP",
+      "slug": "admin_transfer_with_otp",
       "type": "option",
-      "options": "payout,withdrawal",
-      "value": "withdrawal",
-      "status": 1,
-      "adminStatus": 0,
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "6736ed109d97a1e9257a1796"
-      },
-      "title": "Payment",
-      "name": "Withdrawal",
-      "slug": "btc_withdrawal",
-      "type": "not_edit",
       "options": "yes,no",
-      "value": "yes",
-      "status": 1,
-      "adminStatus": 0,
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "6736ed5c9d97a1e9257a179a"
-      },
-      "title": "Withdrawal",
-      "name": "withdrawals mode of payment",
-      "slug": "withdrawals_mode",
-      "type": "array",
-      "options": "{\"in_bank\":\"Bank\",\"in_upi\":\"UPI\",\"in_cripto\":\"Cryp...",
-      "value": "in_bank",
-      "status": 1,
-      "adminStatus": 0,
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "673dd9b141d22155577db795"
-      },
-      "title": "Matrix",
-      "name": "Type of Matrix",
-      "slug": "matrix_type",
-      "type": "option",
-      "options": "auto,team,both",
-      "value": "team",
+      "value": "no",
       "status": 1,
       "adminStatus": 1,
       "__v": 0
@@ -784,38 +819,19 @@
   "RankSettings": [
     {
       "_id": {
-        "$oid": "67e8800305fb6945a4313011"
+        "$oid": "67e881da05fb6945a4313032"
       },
-      "title": "Self Business",
-      "slug": "self_business",
-      "type": "currency",
-      "value": [
-        "500",
-        "500",
-        "1500",
-        "2500",
-        "3500",
-        "5000",
-        "10000"
-      ],
-      "status": 1,
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67e8803205fb6945a4313015"
-      },
-      "title": "Direct Team",
-      "slug": "direct_team",
+      "title": "Months",
+      "slug": "months",
       "type": "number",
       "value": [
+        "3",
+        "3",
+        "3",
         "5",
         "10",
-        "15",
-        "18",
-        "20",
-        "30",
-        "50"
+        "10",
+        "10"
       ],
       "status": 1,
       "__v": 0
@@ -841,38 +857,19 @@
     },
     {
       "_id": {
-        "$oid": "67e880ad05fb6945a431301d"
+        "$oid": "67e8803205fb6945a4313015"
       },
-      "title": "Total Team Size",
-      "slug": "total_team_size",
+      "title": "Direct Team",
+      "slug": "direct_team",
       "type": "number",
       "value": [
+        "5",
+        "10",
         "15",
+        "18",
+        "20",
         "30",
-        "100",
-        "100",
-        "100",
-        "100",
-        "100"
-      ],
-      "status": 1,
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67e8810a05fb6945a4313021"
-      },
-      "title": "DownLine Achievers",
-      "slug": "downline_achievers",
-      "type": "number",
-      "value": [
-        "0",
-        "0",
-        "0",
-        "3",
-        "3",
-        "3",
-        "3"
+        "50"
       ],
       "status": 1,
       "__v": 0
@@ -917,25 +914,6 @@
     },
     {
       "_id": {
-        "$oid": "67e881da05fb6945a4313032"
-      },
-      "title": "Months",
-      "slug": "months",
-      "type": "number",
-      "value": [
-        "3",
-        "3",
-        "3",
-        "5",
-        "10",
-        "10",
-        "10"
-      ],
-      "status": 1,
-      "__v": 0
-    },
-    {
-      "_id": {
         "$oid": "67e8828b05fb6945a4313036"
       },
       "title": "Rank",
@@ -952,9 +930,105 @@
       ],
       "status": 1,
       "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67e880ad05fb6945a431301d"
+      },
+      "title": "Total Team Size",
+      "slug": "total_team_size",
+      "type": "number",
+      "value": [
+        "15",
+        "30",
+        "100",
+        "100",
+        "100",
+        "100",
+        "100"
+      ],
+      "status": 1,
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67e8800305fb6945a4313011"
+      },
+      "title": "Self Business",
+      "slug": "self_business",
+      "type": "currency",
+      "value": [
+        "500",
+        "500",
+        "1500",
+        "2500",
+        "3500",
+        "5000",
+        "10000"
+      ],
+      "status": 1,
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67e8810a05fb6945a4313021"
+      },
+      "title": "DownLine Achievers",
+      "slug": "downline_achievers",
+      "type": "number",
+      "value": [
+        "0",
+        "0",
+        "0",
+        "3",
+        "3",
+        "3",
+        "3"
+      ],
+      "status": 1,
+      "__v": 0
     }
   ],
   "Plan": [
+    {
+      "_id": {
+        "$oid": "67e86f553814a773ac47ed0d"
+      },
+      "title": "ROI Commission",
+      "slug": "roi_level_commission",
+      "type": "number",
+      "value": [
+        "20",
+        "10",
+        "9",
+        "8",
+        "7",
+        "6",
+        "5",
+        "4",
+        "3",
+        "2",
+        "1.5",
+        "1.5",
+        "1.5",
+        "1.5",
+        "1.5",
+        "1",
+        "1",
+        "1",
+        "1",
+        "1",
+        "0.5",
+        "0.5",
+        "0.5",
+        "0.5",
+        "0.5"
+      ],
+      "status": 1,
+      "createdAt": "2025-03-29T22:08:21.651Z",
+      "updatedAt": "2025-03-29T22:08:21.651Z",
+      "__v": 0
+    },
     {
       "_id": {
         "$oid": "67e86ec43814a773ac47ed09"
@@ -972,14 +1046,21 @@
     },
     {
       "_id": {
-        "$oid": "67e86f553814a773ac47ed0d"
+        "$oid": "6807d5e7a8ea177c4c7ac44a"
       },
-      "title": "ROI Commission",
-      "slug": "roi_level_commission",
+      "title": "ROI Commission direct",
+      "slug": "roi_level_commission_direct",
       "type": "number",
       "value": [
-        " 50",
-        "20",
+        "0",
+        "1",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
         "10",
         "10",
         "10",
@@ -987,22 +1068,15 @@
         "10",
         "10",
         "10",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5",
-        "5"
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10",
+        "10"
       ],
       "status": 1,
       "createdAt": "2025-03-29T22:08:21.651Z",
@@ -1030,167 +1104,11 @@
   "CompanyInfo": [
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed9533"
-      },
-      "title": "Company Name",
-      "label": "companyName",
-      "value": "BitXChain",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.141Z",
-      "updatedAt": "2025-03-17T10:27:00.913Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9534"
-      },
-      "title": "Symbol",
-      "label": "symbol",
-      "value": "CPY",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.141Z",
-      "updatedAt": "2025-03-11T09:25:02.141Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9535"
-      },
-      "title": "Base URL",
-      "label": "baseURL",
-      "value": "https://user.swisscorpminer.com/",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.141Z",
-      "updatedAt": "2025-03-11T10:29:00.563Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9536"
-      },
-      "title": "Company Logo",
-      "label": "companyLogo",
-      "value": "/uploads/2025-03-17_1ff1849e-4657-463f-abf1-08cf846befdd_Bitxchain .png",
-      "type": "file",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.141Z",
-      "updatedAt": "2025-03-17T09:59:32.117Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9537"
-      },
-      "title": "Logo height",
-      "label": "logoHeight",
-      "value": "87px",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-17T10:08:37.686Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9538"
-      },
-      "title": "Company Email",
-      "label": "companyEmail",
-      "value": "contact@3xwonder.com",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
         "$oid": "67d0016e8592612cb0ed9539"
       },
       "title": "Company Mobile",
       "label": "companyMobile",
       "value": "+447380801882",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed953a"
-      },
-      "title": "Company title",
-      "label": "companyTitle",
-      "value": "BitXChain",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-17T10:26:55.293Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed953b"
-      },
-      "title": "Address",
-      "label": "companyAddress",
-      "value": "London, UK",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed953c"
-      },
-      "title": "User Sidebar Color",
-      "label": "userSidebarColor",
-      "value": "#000000",
-      "type": "color",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed953d"
-      },
-      "title": "Telephone",
-      "label": "hotlineMobile",
-      "value": "(+123)4 567 890",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed953e"
-      },
-      "title": "Api Key",
-      "label": "apiKey",
-      "value": "+h2du28hd3gh784fg34gfyghy83u4r",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9540"
-      },
-      "title": "Panel",
-      "label": "userPanel",
-      "value": "p32",
       "type": "text",
       "status": 1,
       "createdAt": "2025-03-11T09:25:02.142Z",
@@ -1212,89 +1130,11 @@
     },
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed9542"
-      },
-      "title": "Theme",
-      "label": "mainTheme",
-      "value": "m145",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9543"
-      },
-      "title": "Currency",
-      "label": "currency",
-      "value": "$",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-12T07:58:17.645Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9544"
-      },
-      "title": "Header",
-      "label": "headerContent",
-      "value": "Welcome to SwissCorp",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9545"
-      },
-      "title": "Open Time",
-      "label": "openTime",
-      "value": "8:00AM - 6:00PM",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
         "$oid": "67d0016e8592612cb0ed9546"
       },
       "title": "Admin",
       "label": "adminDirectory",
       "value": "Admin_panel",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9547"
-      },
-      "title": "Panel",
-      "label": "panelDirectory",
-      "value": "User_panel",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9548"
-      },
-      "title": "Theme",
-      "label": "mainDirectory",
-      "value": "Main",
       "type": "text",
       "status": 1,
       "createdAt": "2025-03-11T09:25:02.142Z",
@@ -1316,11 +1156,11 @@
     },
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed954a"
+        "$oid": "67d0016e8592612cb0ed9554"
       },
-      "title": "Mailer",
-      "label": "mailerUsername",
-      "value": "noreply@swisscorpminer.com",
+      "title": "Super Admin",
+      "label": "superAdminPath",
+      "value": "super_admin",
       "type": "text",
       "status": 1,
       "createdAt": "2025-03-11T09:25:02.142Z",
@@ -1329,37 +1169,11 @@
     },
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed954b"
+        "$oid": "67d0016e8592612cb0ed9542"
       },
-      "title": "Mailer",
-      "label": "mailerPassword",
-      "value": "Nilesh123@#",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed954c"
-      },
-      "title": "Mailer",
-      "label": "mailerSetFrom",
-      "value": "noreply@swisscorpminer.com",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed954d"
-      },
-      "title": "Mailer",
-      "label": "mailerReplayTo",
-      "value": "noreply@swisscorpminer.com",
+      "title": "Theme",
+      "label": "mainTheme",
+      "value": "m145",
       "type": "text",
       "status": 1,
       "createdAt": "2025-03-11T09:25:02.142Z",
@@ -1381,45 +1195,6 @@
     },
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed954f"
-      },
-      "title": "Franchise",
-      "label": "franchisePath",
-      "value": "franchise",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9550"
-      },
-      "title": "Franchise",
-      "label": "franchiseDirectory",
-      "value": "Franchise_panel",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9551"
-      },
-      "title": "Franchise",
-      "label": "franchisePanel",
-      "value": "f1",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
         "$oid": "67d0016e8592612cb0ed9552"
       },
       "title": "Super Admin",
@@ -1433,179 +1208,10 @@
     },
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed9553"
-      },
-      "title": "Super Admin",
-      "label": "superAdminDirectory",
-      "value": "Super_admin_panel",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9554"
-      },
-      "title": "Super Admin",
-      "label": "superAdminPath",
-      "value": "super_admin",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9555"
-      },
-      "title": "Company GST",
-      "label": "companyGst",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9556"
-      },
-      "title": "Bill Company Name",
-      "label": "billCompanyName",
-      "value": "Company Name",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9557"
-      },
-      "title": "Bill Company Bank",
-      "label": "billCompanyBankName",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9558"
-      },
-      "title": "Bill Company Account",
-      "label": "billCompanyBankAccount",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9559"
-      },
-      "title": "Bill Company Ifsc",
-      "label": "billCompanyBankIfsc",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed955a"
-      },
-      "title": "Bill_Company Pan",
-      "label": "billCompanyPan",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed955b"
-      },
-      "title": "Bill Company Address",
-      "label": "billCompanyAddress",
-      "value": "Company Location",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.142Z",
-      "updatedAt": "2025-03-11T09:25:02.142Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed955c"
-      },
-      "title": "Bill Company Website",
-      "label": "billCompanyWebsite",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed955d"
-      },
-      "title": "Bill Company State",
-      "label": "billCompanyState",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed955e"
-      },
-      "title": "Bill Company CIN",
-      "label": "billCompanyCIN",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
         "$oid": "67d0016e8592612cb0ed955f"
       },
       "title": "Coinpayments",
       "label": "coinpaymentEmail",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9560"
-      },
-      "title": "Coinpayments",
-      "label": "coinpaymentMerchantId",
       "value": "",
       "type": "text",
       "status": 1,
@@ -1641,15 +1247,249 @@
     },
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed9563"
+        "$oid": "67d0016e8592612cb0ed956c"
       },
-      "title": "Coinpayments",
-      "label": "coinpaymentPublicKey",
+      "title": "Company Telegram Link",
+      "label": "companyTelegramLink",
       "value": "",
       "type": "text",
       "status": 1,
       "createdAt": "2025-03-11T09:25:02.143Z",
       "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed953c"
+      },
+      "title": "User Sidebar Color",
+      "label": "userSidebarColor",
+      "value": "#000000",
+      "type": "color",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed953d"
+      },
+      "title": "Telephone",
+      "label": "hotlineMobile",
+      "value": "(+123)4 567 890",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9577"
+      },
+      "title": "BTC Block API Key",
+      "label": "btcBlockApiKey",
+      "value": "4ed2-071d-e65a-622a",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed957b"
+      },
+      "title": "cryptoapi wallet id",
+      "label": "cryptoapiWalletId",
+      "value": "664c95c373d2200007ecbdf1",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed957e"
+      },
+      "title": "Whatsapp Auth Key",
+      "label": "whatsappAuthKey",
+      "value": "8iJ7FhOPsCSY2DCzxHK0SfHa4sgmOle07fgFbl1B5lFtZbcsS2",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.144Z",
+      "updatedAt": "2025-03-11T09:25:02.144Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d1379388b865a07af5c075"
+      },
+      "title": "Company BSC Address",
+      "label": "companyBSCAddress",
+      "value": "0x73f5818342421dc57f37031070515EccDA13dD69",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-12T07:28:19.601Z",
+      "updatedAt": "2025-04-08T13:21:25.892Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9543"
+      },
+      "title": "Currency",
+      "label": "currency",
+      "value": "$",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-12T07:58:17.645Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed954b"
+      },
+      "title": "Mailer",
+      "label": "mailerPassword",
+      "value": "Nilesh123@#",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9551"
+      },
+      "title": "Franchise",
+      "label": "franchisePanel",
+      "value": "f1",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9555"
+      },
+      "title": "Company GST",
+      "label": "companyGst",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed953a"
+      },
+      "title": "Company title",
+      "label": "companyTitle",
+      "value": "BitXChain",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-17T10:26:55.293Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9566"
+      },
+      "title": "Company Founder name",
+      "label": "CompanyFounderName",
+      "value": "Selvio",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed956e"
+      },
+      "title": "Company Bonus",
+      "label": "companyBonus",
+      "value": "2",
+      "type": "number",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed957d"
+      },
+      "title": "Whatsapp App Key",
+      "label": "whatsappAppKey",
+      "value": "755a830a-2a6a-41c2-b8c5-ee568b0fcfd4",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.144Z",
+      "updatedAt": "2025-03-11T09:25:02.144Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed953e"
+      },
+      "title": "Api Key",
+      "label": "apiKey",
+      "value": "+h2du28hd3gh784fg34gfyghy83u4r",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9540"
+      },
+      "title": "Panel",
+      "label": "userPanel",
+      "value": "p32",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed954c"
+      },
+      "title": "Mailer",
+      "label": "mailerSetFrom",
+      "value": "noreply@swisscorpminer.com",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed955b"
+      },
+      "title": "Bill Company Address",
+      "label": "billCompanyAddress",
+      "value": "Company Location",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
       "__v": 0
     },
     {
@@ -1673,123 +1513,6 @@
       "label": "tronPublicKey",
       "value": "",
       "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9566"
-      },
-      "title": "Company Founder name",
-      "label": "CompanyFounderName",
-      "value": "Selvio",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9567"
-      },
-      "title": "Founder Designation",
-      "label": "companyFounderDesignation",
-      "value": "CEO",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9568"
-      },
-      "title": "Company facebook Link",
-      "label": "companyFacebookLink",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9569"
-      },
-      "title": "Company Twitter Link",
-      "label": "companyTwitterLink",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed956a"
-      },
-      "title": "Company Pinterest Link",
-      "label": "companyPinterestLink",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed956b"
-      },
-      "title": "Company Linkedin Link",
-      "label": "companyLinkedinLink",
-      "value": "ffwe",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-13T05:54:43.210Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed956c"
-      },
-      "title": "Company Telegram Link",
-      "label": "companyTelegramLink",
-      "value": "",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed956d"
-      },
-      "title": "Company Smart Chain Address",
-      "label": "companySmartChainAddress",
-      "value": "0x217F91108148808ec71e4E876A03931bfF8e1e2C",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed956e"
-      },
-      "title": "Company Bonus",
-      "label": "companyBonus",
-      "value": "2",
-      "type": "number",
       "status": 1,
       "createdAt": "2025-03-11T09:25:02.143Z",
       "updatedAt": "2025-03-11T09:25:02.143Z",
@@ -1823,58 +1546,6 @@
     },
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed9571"
-      },
-      "title": "ROI Open Time",
-      "label": "roiOpenTime",
-      "value": "00:01",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9572"
-      },
-      "title": "ROI Close Time",
-      "label": "roiCloseTime",
-      "value": "23:59",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9573"
-      },
-      "title": "Withdrawal Conditions",
-      "label": "wd_conditions",
-      "value": "<ul>     <li style='color:black'>Schedule 10 A.M To 12 P.M </li></ul>",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed9577"
-      },
-      "title": "BTC Block API Key",
-      "label": "btcBlockApiKey",
-      "value": "4ed2-071d-e65a-622a",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
         "$oid": "67d0016e8592612cb0ed9578"
       },
       "title": "BTC Master Address",
@@ -1888,37 +1559,24 @@
     },
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed9579"
+        "$oid": "67d0016e8592612cb0ed9558"
       },
-      "title": "Minimum Withdraw threshold",
-      "label": "minimumWithdrawThreshold",
+      "title": "Bill Company Account",
+      "label": "billCompanyBankAccount",
       "value": "",
       "type": "text",
       "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
       "__v": 0
     },
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed957a"
+        "$oid": "67d0016e8592612cb0ed9572"
       },
-      "title": "cryptoapi api key",
-      "label": "cryptoapiApiKey",
-      "value": "a73627b022f736e11b897e3df6921096495c74d8",
-      "type": "text",
-      "status": 1,
-      "createdAt": "2025-03-11T09:25:02.143Z",
-      "updatedAt": "2025-03-11T09:25:02.143Z",
-      "__v": 0
-    },
-    {
-      "_id": {
-        "$oid": "67d0016e8592612cb0ed957b"
-      },
-      "title": "cryptoapi wallet id",
-      "label": "cryptoapiWalletId",
-      "value": "664c95c373d2200007ecbdf1",
+      "title": "ROI Close Time",
+      "label": "roiCloseTime",
+      "value": "23:59",
       "type": "text",
       "status": 1,
       "createdAt": "2025-03-11T09:25:02.143Z",
@@ -1940,28 +1598,54 @@
     },
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed957d"
+        "$oid": "67d0016e8592612cb0ed9538"
       },
-      "title": "Whatsapp App Key",
-      "label": "whatsappAppKey",
-      "value": "755a830a-2a6a-41c2-b8c5-ee568b0fcfd4",
+      "title": "Company Email",
+      "label": "companyEmail",
+      "value": "contact@3xwonder.com",
       "type": "text",
       "status": 1,
-      "createdAt": "2025-03-11T09:25:02.144Z",
-      "updatedAt": "2025-03-11T09:25:02.144Z",
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
       "__v": 0
     },
     {
       "_id": {
-        "$oid": "67d0016e8592612cb0ed957e"
+        "$oid": "67d0016e8592612cb0ed954a"
       },
-      "title": "Whatsapp Auth Key",
-      "label": "whatsappAuthKey",
-      "value": "8iJ7FhOPsCSY2DCzxHK0SfHa4sgmOle07fgFbl1B5lFtZbcsS2",
+      "title": "Mailer",
+      "label": "mailerUsername",
+      "value": "noreply@swisscorpminer.com",
       "type": "text",
       "status": 1,
-      "createdAt": "2025-03-11T09:25:02.144Z",
-      "updatedAt": "2025-03-11T09:25:02.144Z",
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed955d"
+      },
+      "title": "Bill Company State",
+      "label": "billCompanyState",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed956b"
+      },
+      "title": "Company Linkedin Link",
+      "label": "companyLinkedinLink",
+      "value": "ffwe",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-13T05:54:43.210Z",
       "__v": 0
     },
     {
@@ -1979,15 +1663,158 @@
     },
     {
       "_id": {
-        "$oid": "67d1379388b865a07af5c075"
+        "$oid": "67d0016e8592612cb0ed9537"
       },
-      "title": "Company BSC Address",
-      "label": "companyBSCAddress",
-      "value": "0x73f5818342421dc57f37031070515EccDA13dD69",
+      "title": "Logo height",
+      "label": "logoHeight",
+      "value": "87px",
       "type": "text",
       "status": 1,
-      "createdAt": "2025-03-12T07:28:19.601Z",
-      "updatedAt": "2025-04-08T13:21:25.892Z",
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-17T10:08:37.686Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9557"
+      },
+      "title": "Bill Company Bank",
+      "label": "billCompanyBankName",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9560"
+      },
+      "title": "Coinpayments",
+      "label": "coinpaymentMerchantId",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9533"
+      },
+      "title": "Company Name",
+      "label": "companyName",
+      "value": "BitXChain",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.141Z",
+      "updatedAt": "2025-03-17T10:27:00.913Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9544"
+      },
+      "title": "Header",
+      "label": "headerContent",
+      "value": "Welcome to SwissCorp",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed954f"
+      },
+      "title": "Franchise",
+      "label": "franchisePath",
+      "value": "franchise",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed956a"
+      },
+      "title": "Company Pinterest Link",
+      "label": "companyPinterestLink",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed956d"
+      },
+      "title": "Company Smart Chain Address",
+      "label": "companySmartChainAddress",
+      "value": "0x217F91108148808ec71e4E876A03931bfF8e1e2C",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9553"
+      },
+      "title": "Super Admin",
+      "label": "superAdminDirectory",
+      "value": "Super_admin_panel",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed955e"
+      },
+      "title": "Bill Company CIN",
+      "label": "billCompanyCIN",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67f5230e653f96cfb498b842"
+      },
+      "title": "Company Token Contract",
+      "label": "companyTokenContract",
+      "value": "0x7B5E2af1a89a1a23D8031077a24A2454D81b3fbd",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-04-08T13:22:22.511Z",
+      "updatedAt": "2025-04-08T13:22:22.511Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed957a"
+      },
+      "title": "cryptoapi api key",
+      "label": "cryptoapiApiKey",
+      "value": "a73627b022f736e11b897e3df6921096495c74d8",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
       "__v": 0
     },
     {
@@ -2005,15 +1832,262 @@
     },
     {
       "_id": {
-        "$oid": "67f5230e653f96cfb498b842"
+        "$oid": "67d0016e8592612cb0ed953b"
       },
-      "title": "Company Token Contract",
-      "label": "companyTokenContract",
-      "value": "0x7B5E2af1a89a1a23D8031077a24A2454D81b3fbd",
+      "title": "Address",
+      "label": "companyAddress",
+      "value": "London, UK",
       "type": "text",
       "status": 1,
-      "createdAt": "2025-04-08T13:22:22.511Z",
-      "updatedAt": "2025-04-08T13:22:22.511Z",
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9547"
+      },
+      "title": "Panel",
+      "label": "panelDirectory",
+      "value": "User_panel",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9548"
+      },
+      "title": "Theme",
+      "label": "mainDirectory",
+      "value": "Main",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed954d"
+      },
+      "title": "Mailer",
+      "label": "mailerReplayTo",
+      "value": "noreply@swisscorpminer.com",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9559"
+      },
+      "title": "Bill Company Ifsc",
+      "label": "billCompanyBankIfsc",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9568"
+      },
+      "title": "Company facebook Link",
+      "label": "companyFacebookLink",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9535"
+      },
+      "title": "Base URL",
+      "label": "baseURL",
+      "value": "https://user.swisscorpminer.com/",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.141Z",
+      "updatedAt": "2025-03-11T10:29:00.563Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9536"
+      },
+      "title": "Company Logo",
+      "label": "companyLogo",
+      "value": "/uploads/2025-03-17_1ff1849e-4657-463f-abf1-08cf846befdd_Bitxchain .png",
+      "type": "file",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.141Z",
+      "updatedAt": "2025-03-17T09:59:32.117Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9545"
+      },
+      "title": "Open Time",
+      "label": "openTime",
+      "value": "8:00AM - 6:00PM",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9550"
+      },
+      "title": "Franchise",
+      "label": "franchiseDirectory",
+      "value": "Franchise_panel",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed955c"
+      },
+      "title": "Bill Company Website",
+      "label": "billCompanyWebsite",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9567"
+      },
+      "title": "Founder Designation",
+      "label": "companyFounderDesignation",
+      "value": "CEO",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9569"
+      },
+      "title": "Company Twitter Link",
+      "label": "companyTwitterLink",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9571"
+      },
+      "title": "ROI Open Time",
+      "label": "roiOpenTime",
+      "value": "00:01",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9573"
+      },
+      "title": "Withdrawal Conditions",
+      "label": "wd_conditions",
+      "value": "<ul>     <li style='color:black'>Schedule 10 A.M To 12 P.M </li></ul>",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9534"
+      },
+      "title": "Symbol",
+      "label": "symbol",
+      "value": "CPY",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.141Z",
+      "updatedAt": "2025-03-11T09:25:02.141Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9556"
+      },
+      "title": "Bill Company Name",
+      "label": "billCompanyName",
+      "value": "Company Name",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed955a"
+      },
+      "title": "Bill_Company Pan",
+      "label": "billCompanyPan",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.142Z",
+      "updatedAt": "2025-03-11T09:25:02.142Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9563"
+      },
+      "title": "Coinpayments",
+      "label": "coinpaymentPublicKey",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
+      "__v": 0
+    },
+    {
+      "_id": {
+        "$oid": "67d0016e8592612cb0ed9579"
+      },
+      "title": "Minimum Withdraw threshold",
+      "label": "minimumWithdrawThreshold",
+      "value": "",
+      "type": "text",
+      "status": 1,
+      "createdAt": "2025-03-11T09:25:02.143Z",
+      "updatedAt": "2025-03-11T09:25:02.143Z",
       "__v": 0
     }
   ],
@@ -2042,21 +2116,18 @@
     },
     {
       "_id": {
-        "$oid": "67eb70fe90b3427615cc23c8"
+        "$oid": "67eb73e780ef6d65b5717c75"
       },
-      "title": "Investment",
-      "name": "Add Fund Wallet",
-      "slug": "add_fund_wallet",
-      "options": [
-        "main_wallet",
-        "fund_wallet"
-      ],
-      "value": "fund_wallet",
-      "type": "string",
+      "title": "Withdrawal",
+      "name": "Min Withdrawal Limit",
+      "slug": "min_withdrawal_limit",
+      "options": [],
+      "value": 10,
+      "type": "number",
       "status": 1,
       "adminStatus": 1,
-      "createdAt": "2025-04-01T04:52:14.845Z",
-      "updatedAt": "2025-04-01T04:52:14.845Z",
+      "createdAt": "2025-04-01T05:04:39.178Z",
+      "updatedAt": "2025-04-01T05:04:39.178Z",
       "__v": 0
     },
     {
@@ -2137,6 +2208,22 @@
     },
     {
       "_id": {
+        "$oid": "67eb8734a880169b0e66e3cc"
+      },
+      "title": "Investment",
+      "name": "TopUp Fund wallet",
+      "slug": "topup_fund_wallet",
+      "options": [],
+      "value": "fund_wallet",
+      "type": "string",
+      "status": 1,
+      "adminStatus": 1,
+      "createdAt": "2025-04-01T06:27:00.663Z",
+      "updatedAt": "2025-04-01T06:27:00.663Z",
+      "__v": 0
+    },
+    {
+      "_id": {
         "$oid": "67eb721690b3427615cc23d8"
       },
       "title": "Fund",
@@ -2159,22 +2246,6 @@
     },
     {
       "_id": {
-        "$oid": "67eb73e780ef6d65b5717c75"
-      },
-      "title": "Withdrawal",
-      "name": "Min Withdrawal Limit",
-      "slug": "min_withdrawal_limit",
-      "options": [],
-      "value": 10,
-      "type": "number",
-      "status": 1,
-      "adminStatus": 1,
-      "createdAt": "2025-04-01T05:04:39.178Z",
-      "updatedAt": "2025-04-01T05:04:39.178Z",
-      "__v": 0
-    },
-    {
-      "_id": {
         "$oid": "67eb741c80ef6d65b5717c7b"
       },
       "title": "Withdrawal",
@@ -2191,18 +2262,21 @@
     },
     {
       "_id": {
-        "$oid": "67eb8734a880169b0e66e3cc"
+        "$oid": "67eb70fe90b3427615cc23c8"
       },
       "title": "Investment",
-      "name": "TopUp Fund wallet",
-      "slug": "topup_fund_wallet",
-      "options": [],
+      "name": "Add Fund Wallet",
+      "slug": "add_fund_wallet",
+      "options": [
+        "main_wallet",
+        "fund_wallet"
+      ],
       "value": "fund_wallet",
       "type": "string",
       "status": 1,
       "adminStatus": 1,
-      "createdAt": "2025-04-01T06:27:00.663Z",
-      "updatedAt": "2025-04-01T06:27:00.663Z",
+      "createdAt": "2025-04-01T04:52:14.845Z",
+      "updatedAt": "2025-04-01T04:52:14.845Z",
       "__v": 0
     }
   ],

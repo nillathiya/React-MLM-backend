@@ -23,6 +23,27 @@ exports.roiIncome = (req, res, next) => {
     }
 };
 
+exports.rewardIncome = (req, res, next) => {
+    try {
+        if (!req._IS_ADMIN_ACCOUNT) {
+            throw new ApiError(403, "Unauthorized access");
+        }
+        // Start the async function but do not await it
+        incomeModel.rewarDistribution()
+            .then(() => {
+                console.log('Reward income calculation completed.');
+            })
+            .catch((err) => {
+                console.error('Error during Reward income calculation:', err);
+            });
+
+        // Send response immediately
+        return res.status(200).json(new ApiResponse(200, {}, 'Reward income process started.'))
+    } catch (e) {
+        next(e);
+    }
+};
+
 exports.weeklyClosing = (req, res, next) => {
     try {
         if (!req._IS_ADMIN_ACCOUNT) {
@@ -81,6 +102,27 @@ exports.resetWeekMonth = (req, res, next) => {
 
         // Send response immediately
         return res.status(200).json(new ApiResponse(200, {}, 'Reset week month process started.'))
+    } catch (e) {
+        next(e);
+    }
+}
+
+exports.dailyDirect = (req, res, next) => {
+    try {
+        if (!req._IS_ADMIN_ACCOUNT) {
+            throw new ApiError(403, "Unauthorized access");
+        }
+        // Start the async function but do not await it
+        incomeModel.daily_direct()
+            .then(() => {
+                console.log('Daily Direct completed.');
+            })
+            .catch((err) => {
+                console.error('Error during Daily Direct calculation:', err);
+            });
+
+        // Send response immediately
+        return res.status(200).json(new ApiResponse(200, {}, 'Daily Direct process started.'))
     } catch (e) {
         next(e);
     }

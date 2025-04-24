@@ -98,8 +98,7 @@ const userSchema = new Schema(
             payTM: { type: String },
             upiId: { type: String },
         },
-
-
+        specialStatus: { type: Number, default: 0 }, // 0 - Normal, 1 - Special
         // Nominee Details
         nominee: {
             name: { type: String },

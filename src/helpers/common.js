@@ -169,7 +169,8 @@ common.getBalance = async (uCode, walletSlug) => {
         message: "User not found",
       };
     }
-    const walletSetting = await WalletSettings.findOne({ slug: walletSlug, universal: 1 });
+    const walletSetting = await WalletSettings.findOne({ slug: walletSlug });
+    console.log("walletSetting", walletSetting);
     if (!walletSetting) {
       return 0;
     }
@@ -211,6 +212,7 @@ common.companyInfo = async (label) => {
 common.getTotalUserCappingStatus = async (uCode) => {
   try {
     const totalBalance = await common.getBalance(uCode, "capping");
+    console.log("totalBalance",totalBalance);
     const cappingMultiplier = 2;
     const myPackage = await businessUtils.myPackage(uCode);
     if (!myPackage) {

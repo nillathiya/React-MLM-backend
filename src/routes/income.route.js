@@ -6,6 +6,10 @@ router.post("/roi",
     verifyJwt,
     incomeController.roiIncome);
 
+router.post("/reward",
+    verifyJwt,
+    incomeController.rewardIncome);
+
 router.post("/weekly",
     verifyJwt,
     incomeController.weeklyClosing);
@@ -17,5 +21,9 @@ router.post("/monthly",
 router.post("/resetWeekMonth",
     verifyJwt,
     incomeController.resetWeekMonth);
+
+router.post("/dailyDirect",
+    verifyJwt,
+    incomeController.dailyDirect);
 
 module.exports = router;
