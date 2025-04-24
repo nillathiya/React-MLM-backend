@@ -13,6 +13,7 @@ const topUpRoutes = require('./topup.route.js');
 const adminSettingsRoutes = require('./adminSettings.route.js');
 const rankSettingsRoutes = require('./rankSettings.route.js');
 const newsEventRoutes = require('./newsEvent.route.js');
+const teamRoutes = require('./team.route.js');
 const contactUsRoutes = require('./contactUs.route.js');
 const companyInfoRoutes = require('./companyInfo.route.js'
 );
@@ -37,6 +38,7 @@ router.use("/api/contact-us", contactUsRoutes);
 router.use("/api/company-info", companyInfoRoutes);
 router.use("/api/user-settings", userSettingRoutes);
 router.use("/api/income", incomeRoutes);
+router.use("/api/team", teamRoutes);
 
 module.exports = router;
 
